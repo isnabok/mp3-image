@@ -27,8 +27,7 @@ type MP3MetadataResponse = {
   warnings: string[];
 };
 
-const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://127.0.0.1:8000";
+const API_BASE_URL = "/api/mp3";
 
 const EMPTY_FORM: MetadataForm = {
   outputFilename: "",
@@ -267,7 +266,7 @@ export default function Home() {
       const payload = new FormData();
       payload.append("mp3_file", selectedFile);
 
-      const response = await fetch(`${API_BASE_URL}/api/v1/mp3/read`, {
+      const response = await fetch(`${API_BASE_URL}/read`, {
         method: "POST",
         body: payload,
       });
@@ -375,7 +374,7 @@ export default function Home() {
         payload.append("cover_image", coverFile);
       }
 
-      const response = await fetch(`${API_BASE_URL}/api/v1/mp3/update`, {
+      const response = await fetch(`${API_BASE_URL}/update`, {
         method: "POST",
         body: payload,
       });

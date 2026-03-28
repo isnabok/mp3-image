@@ -7,6 +7,7 @@ class Settings(BaseSettings):
     backend_host: str = "0.0.0.0"
     backend_port: int = 8000
     backend_cors_origins: str = "http://localhost:3000"
+    api_shared_token: str = ""
 
     model_config = SettingsConfigDict(
         env_file=".env",

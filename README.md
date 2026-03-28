@@ -54,7 +54,9 @@ Environment variables come from the shell or `.env` file next to `docker-compose
 Recommended values for local Docker:
 
 ```env
-NEXT_PUBLIC_API_BASE_URL=http://localhost:8000
+NEXT_PUBLIC_API_BASE_URL=/api/mp3
+BACKEND_INTERNAL_API_URL=http://backend:8000
+API_SHARED_TOKEN=change-me-long-random-token
 BACKEND_CORS_ORIGINS=http://localhost:3000
 ```
 
@@ -68,7 +70,9 @@ This repo is ready for a Compose-based Dokploy deployment.
 4. Set environment variables:
 
 ```env
-NEXT_PUBLIC_API_BASE_URL=https://your-backend-domain
+NEXT_PUBLIC_API_BASE_URL=/api/mp3
+BACKEND_INTERNAL_API_URL=http://backend:8000
+API_SHARED_TOKEN=change-me-long-random-token
 BACKEND_CORS_ORIGINS=https://your-frontend-domain
 BACKEND_PORT=8000
 BACKEND_HOST=0.0.0.0
@@ -76,6 +80,7 @@ BACKEND_HOST=0.0.0.0
 
 Important:
 
-- `NEXT_PUBLIC_API_BASE_URL` must be the public URL of the backend, because it is used by the browser
-- if frontend and backend are on different domains, `BACKEND_CORS_ORIGINS` must include the frontend domain
-- when you change `NEXT_PUBLIC_API_BASE_URL`, rebuild the frontend container because this variable is baked into the Next.js build
+- the browser now talks only to `frontend /api/mp3/*`, and the frontend server forwards requests to backend with `API_SHARED_TOKEN`
+- `API_SHARED_TOKEN` must be identical in both frontend and backend containers
+- `BACKEND_INTERNAL_API_URL` should stay on the internal Docker network, for example `http://backend:8000`
+- `BACKEND_CORS_ORIGINS` should still include the frontend domain if you expose the backend publicly for diagnostics

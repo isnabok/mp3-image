@@ -1,8 +1,9 @@
 from urllib.parse import quote
 
-from fastapi import APIRouter, File, Form, HTTPException, UploadFile
+from fastapi import APIRouter, Depends, File, Form, Header, HTTPException, UploadFile
 from fastapi.responses import StreamingResponse
 
+from app.core.config import settings
 from app.schemas.mp3 import MP3MetadataResponse
 from app.services.id3_service import (
     InvalidMP3FileError,
@@ -12,6 +13,17 @@ from app.services.id3_service import (
 
 
 router = APIRouter()
+
+
+def require_api_token(x_api_key: str | None = Header(default=None)) -> None:
+    if not settings.api_shared_token:
+        raise HTTPException(
+            status_code=500,
+            detail="API token is not configured on the server.",
+        )
+
+    if x_api_key != settings.api_shared_token:
+        raise HTTPException(status_code=401, detail="Invalid API token.")
 
 
 def _build_content_disposition(filename: str) -> str:
@@ -29,7 +41,10 @@ def _normalize_download_filename(filename: str | None, fallback: str) -> str:
 
 
 @router.post("/read", response_model=MP3MetadataResponse)
-async def read_mp3_metadata(mp3_file: UploadFile = File(...)) -> MP3MetadataResponse:
+async def read_mp3_metadata(
+    mp3_file: UploadFile = File(...),
+    _: None = Depends(require_api_token),
+) -> MP3MetadataResponse:
     if mp3_file.content_type not in {"audio/mpeg", "audio/mp3", "application/octet-stream"}:
         raise HTTPException(status_code=400, detail="Expected an MP3 file.")
 
@@ -52,6 +67,7 @@ async def update_mp3_metadata(
     year: str | None = Form(default=None),
     track: str | None = Form(default=None),
     comment: str | None = Form(default=None),
+    _: None = Depends(require_api_token),
 ) -> StreamingResponse:
     if mp3_file.content_type not in {"audio/mpeg", "audio/mp3", "application/octet-stream"}:
         raise HTTPException(status_code=400, detail="Expected an MP3 file.")
