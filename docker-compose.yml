@@ -8,8 +8,6 @@ services:
       BACKEND_HOST: 0.0.0.0
       BACKEND_PORT: 8000
       BACKEND_CORS_ORIGINS: ${BACKEND_CORS_ORIGINS:-http://localhost:3000}
-    ports:
-      - "8000:8000"
     restart: unless-stopped
 
   frontend:
@@ -24,6 +22,4 @@ services:
       PORT: 3000
     depends_on:
       - backend
-    ports:
-      - "3000:3000"
     restart: unless-stopped
