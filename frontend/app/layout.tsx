@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import { siteMessages } from "@/lib/i18n";
 import "./globals.css";
 
 const inter = Inter({
@@ -8,8 +9,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "MP3 Cover Editor",
-  description: "Upload MP3 files, edit ID3 tags, and attach cover artwork.",
+  title: siteMessages.meta.title,
+  description: siteMessages.meta.description,
 };
 
 export default function RootLayout({
@@ -19,7 +20,7 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      lang="ru"
+      lang={siteMessages.lang}
       suppressHydrationWarning
       className={`${inter.variable} h-full antialiased`}
     >

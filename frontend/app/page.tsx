@@ -3,6 +3,7 @@
 import { ChangeEvent, DragEvent, useEffect, useRef, useState } from "react";
 
 import { ThemeToggle } from "@/components/theme-toggle";
+import { formatMessage, siteMessages } from "@/lib/i18n";
 
 type MetadataForm = {
   outputFilename: string;
@@ -27,7 +28,17 @@ type MP3MetadataResponse = {
   warnings: string[];
 };
 
-const API_BASE_URL = "/api/mp3";
+const copy = siteMessages;
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "/api/mp3";
+const FIELD_KEYS = [
+  "outputFilename",
+  "title",
+  "artist",
+  "album",
+  "genre",
+  "year",
+  "track",
+] as const;
 
 const EMPTY_FORM: MetadataForm = {
   outputFilename: "",
@@ -40,29 +51,12 @@ const EMPTY_FORM: MetadataForm = {
   comment: "",
 };
 
-const FIELD_CONFIG: Array<{
-  key: keyof Pick<
-    MetadataForm,
-    "outputFilename" | "title" | "artist" | "album" | "genre" | "year" | "track"
-  >;
-  label: string;
-  placeholder: string;
-}> = [
-  { key: "outputFilename", label: "Имя файла", placeholder: "artist-title.mp3" },
-  { key: "title", label: "Название", placeholder: "Например, Midnight Drive" },
-  { key: "artist", label: "Исполнитель", placeholder: "Имя артиста" },
-  { key: "album", label: "Альбом", placeholder: "Название альбома" },
-  { key: "genre", label: "Жанр", placeholder: "House, Pop, Rock..." },
-  { key: "year", label: "Год", placeholder: "2026" },
-  { key: "track", label: "Трек", placeholder: "1/12" },
-];
-
 function getErrorMessage(error: unknown): string {
   if (error instanceof Error) {
     return error.message;
   }
 
-  return "Произошла неизвестная ошибка.";
+  return copy.errors.unknown;
 }
 
 function getFilenameFromDisposition(header: string | null): string | null {
@@ -215,9 +209,7 @@ export default function Home() {
   const [coverFile, setCoverFile] = useState<File | null>(null);
   const [metadata, setMetadata] = useState<MP3Metadata | null>(null);
   const [warnings, setWarnings] = useState<string[]>([]);
-  const [status, setStatus] = useState(
-    "Перетащите MP3 в область ниже или выберите файл с компьютера.",
-  );
+  const [status, setStatus] = useState(copy.status.idle);
   const [error, setError] = useState("");
   const [isDragging, setIsDragging] = useState(false);
   const [isReading, setIsReading] = useState(false);
@@ -260,7 +252,7 @@ export default function Home() {
     setCoverFile(null);
     resetCoverPreview();
     setIsReading(true);
-    setStatus(`Читаем теги из ${selectedFile.name}...`);
+    setStatus(formatMessage(copy.status.reading, { filename: selectedFile.name }));
 
     try {
       const payload = new FormData();
@@ -273,7 +265,7 @@ export default function Home() {
 
       if (!response.ok) {
         const detail = await response.json().catch(() => null);
-        throw new Error(detail?.detail ?? "Не удалось прочитать MP3-файл.");
+        throw new Error(detail?.detail ?? copy.errors.readFailed);
       }
 
       const data = (await response.json()) as MP3MetadataResponse;
@@ -289,13 +281,13 @@ export default function Home() {
         track: data.metadata.track ?? "",
         comment: data.metadata.comment ?? "",
       });
-      setStatus("Файл загружен. Можно редактировать теги и обложку.");
+      setStatus(copy.status.loaded);
     } catch (readError) {
       setMp3File(null);
       setMetadata(null);
       setForm(EMPTY_FORM);
       setError(getErrorMessage(readError));
-      setStatus("Не удалось загрузить метаданные.");
+      setStatus(copy.status.loadFailed);
     } finally {
       setIsReading(false);
     }
@@ -344,19 +336,19 @@ export default function Home() {
     setCoverFile(selectedFile);
     setLocalCoverPreviewUrl(nextPreviewUrl);
     setError("");
-    setStatus(`Новая обложка выбрана: ${selectedFile.name}`);
+    setStatus(formatMessage(copy.status.coverSelected, { filename: selectedFile.name }));
     event.target.value = "";
   };
 
   const handleSave = async () => {
     if (!mp3File) {
-      setError("Сначала выберите MP3-файл.");
+      setError(copy.status.selectFileFirst);
       return;
     }
 
     setIsSaving(true);
     setError("");
-    setStatus("Сохраняем обновленный файл...");
+    setStatus(copy.status.saving);
 
     try {
       const payload = new FormData();
@@ -381,7 +373,7 @@ export default function Home() {
 
       if (!response.ok) {
         const detail = await response.json().catch(() => null);
-        throw new Error(detail?.detail ?? "Не удалось сохранить обновленный MP3.");
+        throw new Error(detail?.detail ?? copy.errors.saveFailed);
       }
 
       const blob = await response.blob();
@@ -399,10 +391,10 @@ export default function Home() {
       document.body.removeChild(link);
       URL.revokeObjectURL(objectUrl);
 
-      setStatus("Готово. Обновленный MP3 скачивается.");
+      setStatus(copy.status.saved);
     } catch (saveError) {
       setError(getErrorMessage(saveError));
-      setStatus("Не удалось сохранить обновленный файл.");
+      setStatus(copy.status.saveFailed);
     } finally {
       setIsSaving(false);
     }
@@ -432,20 +424,18 @@ export default function Home() {
           <div className="flex items-center justify-between gap-4">
             <div>
               <p className="text-sm font-medium uppercase tracking-[0.28em] text-[var(--muted)]">
-                MP3 Cover Editor
+                {copy.header.eyebrow}
               </p>
             </div>
-            <ThemeToggle />
+            <ThemeToggle label={copy.actions.toggleTheme} />
           </div>
 
           <div className="mx-auto mt-12 max-w-[920px] text-center md:mt-16">
             <h1 className="text-4xl font-bold leading-tight text-[var(--foreground)] md:text-6xl md:leading-tight xl:text-7xl xl:leading-tight">
-              Загружайте MP3, редактируйте ID3-теги и добавляйте новую обложку.
+              {copy.hero.title}
             </h1>
             <p className="mx-auto mt-6 max-w-[760px] text-base leading-8 text-[var(--muted)] md:text-lg">
-              Интерфейс построен на визуальной основе шаблона `startup-nextjs-main`,
-              но заточен под одну задачу: быстро открыть MP3, изменить метаданные и
-              скачать обновленный файл под новым именем.
+              {copy.hero.description}
             </p>
           </div>
 
@@ -471,45 +461,43 @@ export default function Home() {
                 MP3
               </div>
               <h2 className="relative z-10 mt-8 text-3xl font-semibold md:text-4xl">
-                {isReading ? "Читаем метаданные..." : "Перетащите MP3 сюда"}
+                {isReading ? copy.hero.dropzoneReading : copy.hero.dropzoneIdle}
               </h2>
               <p className="relative z-10 mt-4 max-w-[680px] text-base leading-7 text-[var(--muted)] md:text-lg">
-                Или нажмите на эту область, чтобы выбрать файл на компьютере.
-                После загрузки ниже откроются все поля редактирования.
+                {copy.hero.dropzoneDescription}
               </p>
               <span className="relative z-10 mt-8 inline-flex rounded-sm bg-[var(--accent)] px-8 py-4 text-base font-semibold text-white transition duration-300 group-hover:bg-[var(--accent-strong)]">
-                Выбрать MP3
+                {copy.actions.selectMp3}
               </span>
             </button>
 
             <div className="mx-auto mt-8 max-w-[800px] text-center">
               <p className="text-sm leading-7 text-[var(--muted)] md:text-base">
-                1. Загрузите один MP3-файл.
-                <br />
-                2. Дождитесь чтения текущих тегов.
-                <br />
-                3. Измените имя файла, метаданные и обложку.
-                <br />
-                4. Скачайте готовый MP3.
+                {copy.hero.steps.map((step, index) => (
+                  <span key={step}>
+                    {index + 1}. {step}
+                    {index < copy.hero.steps.length - 1 ? <br /> : null}
+                  </span>
+                ))}
               </p>
             </div>
 
             <div className="mx-auto mt-8 grid max-w-[980px] gap-4 md:grid-cols-[1.2fr_0.8fr]">
               <div className="rounded-[22px] border border-[var(--border)] bg-[var(--surface)] px-5 py-4">
                 <p className="text-xs uppercase tracking-[0.22em] text-[var(--muted)]">
-                  Статус
+                  {copy.status.panelTitle}
                 </p>
                 <p className="mt-2 text-base font-medium">{status}</p>
                 {mp3File ? (
-                  <p className="mt-2 text-sm text-[var(--muted)]">Текущий файл: {mp3File.name}</p>
+                  <p className="mt-2 text-sm text-[var(--muted)]">
+                    {formatMessage(copy.status.currentFile, { filename: mp3File.name })}
+                  </p>
                 ) : null}
-                {error ? (
-                  <p className="mt-3 text-sm text-[var(--danger)]">{error}</p>
-                ) : null}
+                {error ? <p className="mt-3 text-sm text-[var(--danger)]">{error}</p> : null}
               </div>
               <div className="rounded-[22px] border border-[var(--border)] bg-[var(--surface)] px-5 py-4">
                 <p className="text-xs uppercase tracking-[0.22em] text-[var(--muted)]">
-                  Предупреждения
+                  {copy.warnings.panelTitle}
                 </p>
                 {warnings.length > 0 ? (
                   <div className="mt-2 space-y-2">
@@ -520,7 +508,7 @@ export default function Home() {
                     ))}
                   </div>
                 ) : (
-                  <p className="mt-2 text-sm text-[var(--muted)]">Пока все чисто.</p>
+                  <p className="mt-2 text-sm text-[var(--muted)]">{copy.warnings.empty}</p>
                 )}
               </div>
             </div>
@@ -534,19 +522,19 @@ export default function Home() {
             <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
               <div className="rounded-[28px] border border-[var(--border)] bg-[var(--surface)] p-6 shadow-[0_18px_40px_rgba(13,24,45,0.05)] dark:shadow-none">
                 <p className="text-sm uppercase tracking-[0.24em] text-[var(--muted)]">
-                  Обложка
+                  {copy.cover.panelTitle}
                 </p>
                 <div className="mt-5 flex aspect-square max-w-[320px] items-center justify-center overflow-hidden rounded-[24px] border border-[var(--border)] bg-[var(--surface-soft)]">
                   {previewUrl ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
                       src={previewUrl}
-                      alt="MP3 cover preview"
+                      alt={copy.cover.previewAlt}
                       className="h-full w-full object-cover"
                     />
                   ) : (
                     <div className="px-8 text-center text-sm leading-6 text-[var(--muted)]">
-                      В этом файле пока нет встроенной обложки.
+                      {copy.cover.empty}
                     </div>
                   )}
                 </div>
@@ -557,7 +545,7 @@ export default function Home() {
                     onClick={() => coverInputRef.current?.click()}
                     className="rounded-sm border border-[var(--border)] px-5 py-3 text-sm font-medium transition hover:border-[var(--accent)] hover:text-[var(--accent)]"
                   >
-                    Выбрать новую обложку
+                    {copy.actions.selectCover}
                   </button>
                   <button
                     type="button"
@@ -565,60 +553,64 @@ export default function Home() {
                     disabled={isSaving}
                     className="rounded-sm bg-[var(--accent)] px-5 py-3 text-sm font-medium text-white transition hover:bg-[var(--accent-strong)] disabled:cursor-not-allowed disabled:opacity-60"
                   >
-                    {isSaving ? "Сохранение..." : "Сохранить и скачать"}
+                    {isSaving ? copy.actions.saving : copy.actions.save}
                   </button>
                 </div>
 
                 <div className="mt-5 grid gap-3 sm:grid-cols-2">
                   <div className="rounded-[18px] border border-[var(--border)] bg-[var(--surface-soft)] p-4">
                     <p className="text-xs uppercase tracking-[0.2em] text-[var(--muted)]">
-                      MIME
+                      {copy.cover.mime}
                     </p>
                     <p className="mt-2 text-sm">
-                      {metadata?.cover_mime_type ?? coverFile?.type ?? "нет"}
+                      {metadata?.cover_mime_type ?? coverFile?.type ?? copy.cover.none}
                     </p>
                   </div>
                   <div className="rounded-[18px] border border-[var(--border)] bg-[var(--surface-soft)] p-4">
                     <p className="text-xs uppercase tracking-[0.2em] text-[var(--muted)]">
-                      Новая картинка
+                      {copy.cover.newImage}
                     </p>
-                    <p className="mt-2 text-sm">{coverFile?.name ?? "не выбрана"}</p>
+                    <p className="mt-2 text-sm">{coverFile?.name ?? copy.cover.notSelected}</p>
                   </div>
                 </div>
               </div>
 
               <div className="rounded-[28px] border border-[var(--border)] bg-[var(--surface)] p-6 shadow-[0_18px_40px_rgba(13,24,45,0.05)] dark:shadow-none">
                 <p className="text-sm uppercase tracking-[0.24em] text-[var(--muted)]">
-                  Метаданные
+                  {copy.metadata.panelTitle}
                 </p>
-                <h2 className="mt-3 text-3xl font-semibold">Редактирование тегов</h2>
+                <h2 className="mt-3 text-3xl font-semibold">{copy.metadata.title}</h2>
 
                 <div className="mt-8 grid gap-4 md:grid-cols-2">
-                  {FIELD_CONFIG.map((field) => (
+                  {FIELD_KEYS.map((fieldKey) => (
                     <label
-                      key={field.key}
+                      key={fieldKey}
                       className="rounded-[20px] border border-[var(--border)] bg-[var(--surface-soft)] p-4"
                     >
-                      <span className="text-sm font-medium text-[var(--muted)]">{field.label}</span>
+                      <span className="text-sm font-medium text-[var(--muted)]">
+                        {copy.metadata.fields[fieldKey].label}
+                      </span>
                       <input
                         type="text"
-                        name={field.key}
-                        value={form[field.key]}
+                        name={fieldKey}
+                        value={form[fieldKey]}
                         onChange={handleFieldChange}
-                        placeholder={field.placeholder}
+                        placeholder={copy.metadata.fields[fieldKey].placeholder}
                         className="mt-3 w-full rounded-sm border border-[var(--border)] bg-[var(--surface)] px-4 py-3 text-sm outline-none transition focus:border-[var(--accent)]"
                       />
                     </label>
                   ))}
 
                   <label className="rounded-[20px] border border-[var(--border)] bg-[var(--surface-soft)] p-4 md:col-span-2">
-                    <span className="text-sm font-medium text-[var(--muted)]">Комментарий</span>
+                    <span className="text-sm font-medium text-[var(--muted)]">
+                      {copy.metadata.commentLabel}
+                    </span>
                     <textarea
                       rows={5}
                       name="comment"
                       value={form.comment}
                       onChange={handleFieldChange}
-                      placeholder="Текст комментария для ID3-тега COMM"
+                      placeholder={copy.metadata.commentPlaceholder}
                       className="mt-3 w-full resize-none rounded-sm border border-[var(--border)] bg-[var(--surface)] px-4 py-3 text-sm outline-none transition focus:border-[var(--accent)]"
                     />
                   </label>

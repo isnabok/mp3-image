@@ -17,6 +17,7 @@ services:
       dockerfile: Dockerfile
       args:
         NEXT_PUBLIC_API_BASE_URL: ${NEXT_PUBLIC_API_BASE_URL:-/api/mp3}
+        NEXT_PUBLIC_SITE_LOCALE: ${NEXT_PUBLIC_SITE_LOCALE:-ru}
     container_name: mp3-cover-frontend
     environment:
       PORT: 3000

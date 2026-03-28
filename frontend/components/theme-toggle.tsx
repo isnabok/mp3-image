@@ -3,6 +3,9 @@
 import { useEffect, useState } from "react";
 
 type ThemeMode = "light" | "dark";
+type ThemeToggleProps = {
+  label?: string;
+};
 
 const STORAGE_KEY = "mp3-cover-editor-theme";
 
@@ -11,7 +14,7 @@ function applyTheme(theme: ThemeMode) {
   root.classList.toggle("dark", theme === "dark");
 }
 
-export function ThemeToggle() {
+export function ThemeToggle({ label = "Toggle theme" }: ThemeToggleProps) {
   const [theme, setTheme] = useState<ThemeMode>(() => {
     if (typeof window === "undefined") {
       return "light";
@@ -35,7 +38,8 @@ export function ThemeToggle() {
   return (
     <button
       type="button"
-      aria-label="theme toggler"
+      aria-label={label}
+      title={label}
       onClick={handleToggle}
       className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-black/10 bg-white text-slate-900 shadow-[0_10px_30px_rgba(18,23,35,0.08)] transition hover:-translate-y-0.5 hover:shadow-[0_14px_36px_rgba(18,23,35,0.12)] dark:border-white/10 dark:bg-slate-900 dark:text-white dark:shadow-none"
     >

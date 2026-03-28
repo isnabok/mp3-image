@@ -1,0 +1,97 @@
+{
+  "lang": "en",
+  "meta": {
+    "title": "MP3 Cover & ID3 Tag Editor",
+    "description": "Upload MP3 files, edit ID3 tags, change the download filename, and save an updated file with new cover art."
+  },
+  "header": {
+    "eyebrow": "MP3 Cover Editor"
+  },
+  "actions": {
+    "selectMp3": "Choose MP3",
+    "selectCover": "Choose new cover",
+    "save": "Save and download",
+    "saving": "Saving...",
+    "toggleTheme": "Toggle theme"
+  },
+  "hero": {
+    "title": "Upload MP3 files, edit ID3 tags, and add a new cover image.",
+    "description": "The interface is focused on one task: open an MP3, update its metadata, and download the refreshed file under a new name.",
+    "dropzoneIdle": "Drop your MP3 here",
+    "dropzoneReading": "Reading metadata...",
+    "dropzoneDescription": "Or click this area to choose a file from your computer. After upload, all editing fields will appear below.",
+    "steps": [
+      "Upload one MP3 file.",
+      "Wait until the current tags are loaded.",
+      "Update the filename, metadata, and cover.",
+      "Download the finished MP3."
+    ]
+  },
+  "status": {
+    "panelTitle": "Status",
+    "idle": "Drop an MP3 into the area below or choose a file from your computer.",
+    "reading": "Reading tags from {filename}...",
+    "loaded": "File loaded. You can now edit tags and cover art.",
+    "loadFailed": "Could not load metadata.",
+    "coverSelected": "New cover selected: {filename}",
+    "saving": "Saving the updated file...",
+    "saved": "Done. Your updated MP3 is downloading.",
+    "saveFailed": "Could not save the updated file.",
+    "selectFileFirst": "Select an MP3 file first.",
+    "currentFile": "Current file: {filename}"
+  },
+  "warnings": {
+    "panelTitle": "Warnings",
+    "empty": "Everything looks clean so far."
+  },
+  "errors": {
+    "unknown": "An unknown error occurred.",
+    "readFailed": "Could not read the MP3 file.",
+    "saveFailed": "Could not save the updated MP3."
+  },
+  "cover": {
+    "panelTitle": "Cover",
+    "empty": "This file does not have embedded cover art yet.",
+    "previewAlt": "MP3 cover preview",
+    "mime": "MIME",
+    "newImage": "New image",
+    "none": "none",
+    "notSelected": "not selected"
+  },
+  "metadata": {
+    "panelTitle": "Metadata",
+    "title": "Tag editor",
+    "commentLabel": "Comment",
+    "commentPlaceholder": "Comment text for the COMM ID3 tag",
+    "fields": {
+      "outputFilename": {
+        "label": "Filename",
+        "placeholder": "artist-title.mp3"
+      },
+      "title": {
+        "label": "Title",
+        "placeholder": "For example, Midnight Drive"
+      },
+      "artist": {
+        "label": "Artist",
+        "placeholder": "Artist name"
+      },
+      "album": {
+        "label": "Album",
+        "placeholder": "Album title"
+      },
+      "genre": {
+        "label": "Genre",
+        "placeholder": "House, Pop, Rock..."
+      },
+      "year": {
+        "label": "Year",
+        "placeholder": "2026"
+      },
+      "track": {
+        "label": "Track",
+        "placeholder": "1/12"
+      }
+    }
+  }
+}
