@@ -44,6 +44,22 @@
     "panelTitle": "Warnings",
     "empty": "Everything looks clean so far."
   },
+  "progress": {
+    "uploadPanelTitle": "Upload status",
+    "savePanelTitle": "Processing and download",
+    "uploading": "Uploading file...",
+    "processingMetadata": "Reading metadata on the server...",
+    "metadataReady": "Metadata loaded.",
+    "uploadingChanges": "Uploading file and changes...",
+    "preparingDownload": "Preparing the new MP3...",
+    "downloading": "Downloading the finished file...",
+    "downloadReady": "File is ready and downloaded.",
+    "fileSize": "File size",
+    "downloadSize": "Downloaded file size",
+    "selectedFile": "Selected file",
+    "percent": "{value}%",
+    "unknownPercent": "..."
+  },
   "errors": {
     "unknown": "An unknown error occurred.",
     "readFailed": "Could not read the MP3 file.",

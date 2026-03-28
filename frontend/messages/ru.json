@@ -44,6 +44,22 @@
     "panelTitle": "Предупреждения",
     "empty": "Пока все чисто."
   },
+  "progress": {
+    "uploadPanelTitle": "Загрузка файла",
+    "savePanelTitle": "Подготовка и скачивание",
+    "uploading": "Загружаем файл...",
+    "processingMetadata": "Читаем метаданные на сервере...",
+    "metadataReady": "Метаданные загружены.",
+    "uploadingChanges": "Отправляем файл и изменения...",
+    "preparingDownload": "Подготавливаем новый MP3...",
+    "downloading": "Скачиваем готовый файл...",
+    "downloadReady": "Файл готов и скачан.",
+    "fileSize": "Размер файла",
+    "downloadSize": "Размер скачанного файла",
+    "selectedFile": "Выбранный файл",
+    "percent": "{value}%",
+    "unknownPercent": "..."
+  },
   "errors": {
     "unknown": "Произошла неизвестная ошибка.",
     "readFailed": "Не удалось прочитать MP3-файл.",

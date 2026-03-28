@@ -28,6 +28,15 @@ type MP3MetadataResponse = {
   warnings: string[];
 };
 
+type ProgressPhase = "idle" | "uploading" | "processing" | "downloading" | "completed" | "error";
+type OperationProgress = {
+  phase: ProgressPhase;
+  percent: number | null;
+  loadedBytes: number;
+  totalBytes: number | null;
+  resultBytes: number | null;
+};
+
 const copy = siteMessages;
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "/api/mp3";
 const FIELD_KEYS = [
@@ -51,6 +60,14 @@ const EMPTY_FORM: MetadataForm = {
   comment: "",
 };
 
+const EMPTY_PROGRESS: OperationProgress = {
+  phase: "idle",
+  percent: null,
+  loadedBytes: 0,
+  totalBytes: null,
+  resultBytes: null,
+};
+
 function getErrorMessage(error: unknown): string {
   if (error instanceof Error) {
     return error.message;
@@ -71,6 +88,133 @@ function getFilenameFromDisposition(header: string | null): string | null {
 
   const plainMatch = header.match(/filename="?([^"]+)"?/i);
   return plainMatch?.[1] ?? null;
+}
+
+function formatBytes(bytes: number | null): string {
+  if (!bytes || bytes < 0) {
+    return "0 B";
+  }
+
+  const units = ["B", "KB", "MB", "GB"];
+  let value = bytes;
+  let unitIndex = 0;
+
+  while (value >= 1024 && unitIndex < units.length - 1) {
+    value /= 1024;
+    unitIndex += 1;
+  }
+
+  const fractionDigits = value >= 10 || unitIndex === 0 ? 0 : 1;
+  return `${value.toFixed(fractionDigits)} ${units[unitIndex]}`;
+}
+
+async function extractErrorDetail(xhr: XMLHttpRequest, fallback: string): Promise<string> {
+  try {
+    const bodyText =
+      xhr.response instanceof Blob
+        ? await xhr.response.text()
+        : typeof xhr.responseText === "string"
+          ? xhr.responseText
+          : "";
+
+    if (!bodyText) {
+      return fallback;
+    }
+
+    const parsed = JSON.parse(bodyText) as { detail?: string };
+    return parsed.detail ?? fallback;
+  } catch {
+    return fallback;
+  }
+}
+
+function sendFormDataRequest(
+  url: string,
+  formData: FormData,
+  options: {
+    responseType?: XMLHttpRequestResponseType;
+    onUploadProgress?: (loaded: number, total: number | null) => void;
+    onUploadComplete?: () => void;
+    onDownloadProgress?: (loaded: number, total: number | null) => void;
+  } = {},
+): Promise<XMLHttpRequest> {
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open("POST", url);
+    xhr.responseType = options.responseType ?? "text";
+
+    xhr.upload.onprogress = (event) => {
+      options.onUploadProgress?.(event.loaded, event.lengthComputable ? event.total : null);
+    };
+
+    xhr.upload.onload = () => {
+      options.onUploadComplete?.();
+    };
+
+    xhr.onprogress = (event) => {
+      options.onDownloadProgress?.(event.loaded, event.lengthComputable ? event.total : null);
+    };
+
+    xhr.onerror = () => {
+      reject(new Error("Network error"));
+    };
+
+    xhr.onload = () => {
+      if (xhr.status >= 200 && xhr.status < 300) {
+        resolve(xhr);
+        return;
+      }
+
+      void (async () => {
+        reject(new Error(await extractErrorDetail(xhr, `Request failed with status ${xhr.status}`)));
+      })();
+    };
+
+    xhr.send(formData);
+  });
+}
+
+function getReadProgressLabel(progress: OperationProgress): string {
+  switch (progress.phase) {
+    case "uploading":
+      return copy.progress.uploading;
+    case "processing":
+      return copy.progress.processingMetadata;
+    case "completed":
+      return copy.progress.metadataReady;
+    default:
+      return copy.progress.uploadPanelTitle;
+  }
+}
+
+function getSaveProgressLabel(progress: OperationProgress): string {
+  switch (progress.phase) {
+    case "uploading":
+      return copy.progress.uploadingChanges;
+    case "processing":
+      return copy.progress.preparingDownload;
+    case "downloading":
+      return copy.progress.downloading;
+    case "completed":
+      return copy.progress.downloadReady;
+    default:
+      return copy.progress.savePanelTitle;
+  }
+}
+
+function ProgressBar({ progress }: { progress: OperationProgress }) {
+  const width = progress.percent === null ? "45%" : `${progress.percent}%`;
+
+  return (
+    <div className="mt-3 h-2.5 overflow-hidden rounded-full bg-[var(--surface-soft)]">
+      <div
+        className={`h-full rounded-full bg-[var(--accent)] transition-all duration-300 ${
+          progress.percent === null ? "animate-pulse" : ""
+        }`}
+        style={{ width }}
+      />
+    </div>
+  );
 }
 
 function HeroShapes() {
@@ -215,6 +359,8 @@ export default function Home() {
   const [isReading, setIsReading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [localCoverPreviewUrl, setLocalCoverPreviewUrl] = useState<string | null>(null);
+  const [readProgress, setReadProgress] = useState<OperationProgress>(EMPTY_PROGRESS);
+  const [saveProgress, setSaveProgress] = useState<OperationProgress>(EMPTY_PROGRESS);
 
   useEffect(() => {
     return () => {
@@ -250,25 +396,41 @@ export default function Home() {
     setWarnings([]);
     setError("");
     setCoverFile(null);
+    setSaveProgress(EMPTY_PROGRESS);
     resetCoverPreview();
     setIsReading(true);
     setStatus(formatMessage(copy.status.reading, { filename: selectedFile.name }));
+    setReadProgress({
+      ...EMPTY_PROGRESS,
+      phase: "uploading",
+      percent: 0,
+      totalBytes: selectedFile.size,
+    });
 
     try {
       const payload = new FormData();
       payload.append("mp3_file", selectedFile);
 
-      const response = await fetch(`${API_BASE_URL}/read`, {
-        method: "POST",
-        body: payload,
+      const xhr = await sendFormDataRequest(`${API_BASE_URL}/read`, payload, {
+        onUploadProgress: (loaded, total) => {
+          setReadProgress({
+            phase: "uploading",
+            loadedBytes: loaded,
+            totalBytes: total,
+            percent: total ? Math.min(100, (loaded / total) * 100) : null,
+            resultBytes: null,
+          });
+        },
+        onUploadComplete: () => {
+          setReadProgress((current) => ({
+            ...current,
+            phase: "processing",
+            percent: null,
+          }));
+        },
       });
 
-      if (!response.ok) {
-        const detail = await response.json().catch(() => null);
-        throw new Error(detail?.detail ?? copy.errors.readFailed);
-      }
-
-      const data = (await response.json()) as MP3MetadataResponse;
+      const data = JSON.parse(xhr.responseText) as MP3MetadataResponse;
       setMetadata(data.metadata);
       setWarnings(data.warnings);
       setForm({
@@ -282,12 +444,23 @@ export default function Home() {
         comment: data.metadata.comment ?? "",
       });
       setStatus(copy.status.loaded);
+      setReadProgress({
+        phase: "completed",
+        percent: 100,
+        loadedBytes: selectedFile.size,
+        totalBytes: selectedFile.size,
+        resultBytes: null,
+      });
     } catch (readError) {
       setMp3File(null);
       setMetadata(null);
       setForm(EMPTY_FORM);
       setError(getErrorMessage(readError));
       setStatus(copy.status.loadFailed);
+      setReadProgress({
+        ...EMPTY_PROGRESS,
+        phase: "error",
+      });
     } finally {
       setIsReading(false);
     }
@@ -349,6 +522,12 @@ export default function Home() {
     setIsSaving(true);
     setError("");
     setStatus(copy.status.saving);
+    setSaveProgress({
+      ...EMPTY_PROGRESS,
+      phase: "uploading",
+      percent: 0,
+      totalBytes: mp3File.size,
+    });
 
     try {
       const payload = new FormData();
@@ -366,19 +545,38 @@ export default function Home() {
         payload.append("cover_image", coverFile);
       }
 
-      const response = await fetch(`${API_BASE_URL}/update`, {
-        method: "POST",
-        body: payload,
+      const xhr = await sendFormDataRequest(`${API_BASE_URL}/update`, payload, {
+        responseType: "blob",
+        onUploadProgress: (loaded, total) => {
+          setSaveProgress({
+            phase: "uploading",
+            loadedBytes: loaded,
+            totalBytes: total,
+            percent: total ? Math.min(100, (loaded / total) * 100) : null,
+            resultBytes: null,
+          });
+        },
+        onUploadComplete: () => {
+          setSaveProgress((current) => ({
+            ...current,
+            phase: "processing",
+            percent: null,
+          }));
+        },
+        onDownloadProgress: (loaded, total) => {
+          setSaveProgress({
+            phase: "downloading",
+            loadedBytes: loaded,
+            totalBytes: total,
+            percent: total ? Math.min(100, (loaded / total) * 100) : null,
+            resultBytes: null,
+          });
+        },
       });
 
-      if (!response.ok) {
-        const detail = await response.json().catch(() => null);
-        throw new Error(detail?.detail ?? copy.errors.saveFailed);
-      }
-
-      const blob = await response.blob();
+      const blob = xhr.response as Blob;
       const objectUrl = URL.createObjectURL(blob);
-      const disposition = response.headers.get("content-disposition");
+      const disposition = xhr.getResponseHeader("content-disposition");
       const downloadName =
         getFilenameFromDisposition(disposition) ??
         (form.outputFilename || `${mp3File.name.replace(/\.mp3$/i, "")}-updated.mp3`);
@@ -392,9 +590,20 @@ export default function Home() {
       URL.revokeObjectURL(objectUrl);
 
       setStatus(copy.status.saved);
+      setSaveProgress({
+        phase: "completed",
+        percent: 100,
+        loadedBytes: blob.size,
+        totalBytes: blob.size,
+        resultBytes: blob.size,
+      });
     } catch (saveError) {
       setError(getErrorMessage(saveError));
       setStatus(copy.status.saveFailed);
+      setSaveProgress({
+        ...EMPTY_PROGRESS,
+        phase: "error",
+      });
     } finally {
       setIsSaving(false);
     }
@@ -469,6 +678,39 @@ export default function Home() {
               <span className="relative z-10 mt-8 inline-flex rounded-sm bg-[var(--accent)] px-8 py-4 text-base font-semibold text-white transition duration-300 group-hover:bg-[var(--accent-strong)]">
                 {copy.actions.selectMp3}
               </span>
+
+              {mp3File || readProgress.phase !== "idle" ? (
+                <div className="relative z-10 mt-8 w-full max-w-[620px] rounded-[22px] border border-[var(--border)] bg-[var(--surface)]/90 px-5 py-4 text-left backdrop-blur">
+                  <div className="flex items-center justify-between gap-4">
+                    <p className="text-xs uppercase tracking-[0.22em] text-[var(--muted)]">
+                      {copy.progress.uploadPanelTitle}
+                    </p>
+                    <p className="text-sm font-medium text-[var(--foreground)]">
+                      {readProgress.percent === null
+                        ? copy.progress.unknownPercent
+                        : formatMessage(copy.progress.percent, {
+                            value: Math.round(readProgress.percent),
+                          })}
+                    </p>
+                  </div>
+                  <p className="mt-2 text-sm font-medium text-[var(--foreground)]">
+                    {getReadProgressLabel(readProgress)}
+                  </p>
+                  <ProgressBar progress={readProgress} />
+                  <div className="mt-3 flex flex-wrap gap-x-6 gap-y-2 text-sm text-[var(--muted)]">
+                    {mp3File ? (
+                      <span>
+                        {copy.progress.selectedFile}: {mp3File.name}
+                      </span>
+                    ) : null}
+                    {mp3File ? (
+                      <span>
+                        {copy.progress.fileSize}: {formatBytes(mp3File.size)}
+                      </span>
+                    ) : null}
+                  </div>
+                </div>
+              ) : null}
             </button>
 
             <div className="mx-auto mt-8 max-w-[800px] text-center">
@@ -556,6 +798,35 @@ export default function Home() {
                     {isSaving ? copy.actions.saving : copy.actions.save}
                   </button>
                 </div>
+
+                {saveProgress.phase !== "idle" ? (
+                  <div className="mt-5 rounded-[20px] border border-[var(--border)] bg-[var(--surface-soft)] p-4">
+                    <div className="flex items-center justify-between gap-4">
+                      <p className="text-xs uppercase tracking-[0.2em] text-[var(--muted)]">
+                        {copy.progress.savePanelTitle}
+                      </p>
+                      <p className="text-sm font-medium text-[var(--foreground)]">
+                        {saveProgress.percent === null
+                          ? copy.progress.unknownPercent
+                          : formatMessage(copy.progress.percent, {
+                              value: Math.round(saveProgress.percent),
+                            })}
+                      </p>
+                    </div>
+                    <p className="mt-2 text-sm font-medium">{getSaveProgressLabel(saveProgress)}</p>
+                    <ProgressBar progress={saveProgress} />
+                    <div className="mt-3 flex flex-wrap gap-x-6 gap-y-2 text-sm text-[var(--muted)]">
+                      <span>
+                        {copy.progress.fileSize}: {formatBytes(mp3File?.size ?? null)}
+                      </span>
+                      {saveProgress.resultBytes ? (
+                        <span>
+                          {copy.progress.downloadSize}: {formatBytes(saveProgress.resultBytes)}
+                        </span>
+                      ) : null}
+                    </div>
+                  </div>
+                ) : null}
 
                 <div className="mt-5 grid gap-3 sm:grid-cols-2">
                   <div className="rounded-[18px] border border-[var(--border)] bg-[var(--surface-soft)] p-4">
