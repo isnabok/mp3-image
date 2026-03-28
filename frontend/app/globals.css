@@ -13,6 +13,7 @@
   --muted: #788293;
   --success: #0f9f6e;
   --danger: #d64545;
+  --leading-tight: 1;
 }
 
 @theme inline {

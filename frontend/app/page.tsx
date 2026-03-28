@@ -761,87 +761,57 @@ export default function Home() {
       {hasLoadedFile ? (
         <section className="pb-14 md:pb-20">
           <div className="container-shell">
-            <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
+            <div className="space-y-6">
               <div className="rounded-[28px] border border-[var(--border)] bg-[var(--surface)] p-6 shadow-[0_18px_40px_rgba(13,24,45,0.05)] dark:shadow-none">
                 <p className="text-sm uppercase tracking-[0.24em] text-[var(--muted)]">
                   {copy.cover.panelTitle}
                 </p>
-                <div className="mt-5 flex aspect-square max-w-[320px] items-center justify-center overflow-hidden rounded-[24px] border border-[var(--border)] bg-[var(--surface-soft)]">
-                  {previewUrl ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      src={previewUrl}
-                      alt={copy.cover.previewAlt}
-                      className="h-full w-full object-cover"
-                    />
-                  ) : (
-                    <div className="px-8 text-center text-sm leading-6 text-[var(--muted)]">
-                      {copy.cover.empty}
-                    </div>
-                  )}
-                </div>
 
-                <div className="mt-5 flex flex-wrap gap-3">
-                  <button
-                    type="button"
-                    onClick={() => coverInputRef.current?.click()}
-                    className="rounded-sm border border-[var(--border)] px-5 py-3 text-sm font-medium transition hover:border-[var(--accent)] hover:text-[var(--accent)]"
-                  >
-                    {copy.actions.selectCover}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={handleSave}
-                    disabled={isSaving}
-                    className="rounded-sm bg-[var(--accent)] px-5 py-3 text-sm font-medium text-white transition hover:bg-[var(--accent-strong)] disabled:cursor-not-allowed disabled:opacity-60"
-                  >
-                    {isSaving ? copy.actions.saving : copy.actions.save}
-                  </button>
-                </div>
-
-                {saveProgress.phase !== "idle" ? (
-                  <div className="mt-5 rounded-[20px] border border-[var(--border)] bg-[var(--surface-soft)] p-4">
-                    <div className="flex items-center justify-between gap-4">
-                      <p className="text-xs uppercase tracking-[0.2em] text-[var(--muted)]">
-                        {copy.progress.savePanelTitle}
-                      </p>
-                      <p className="text-sm font-medium text-[var(--foreground)]">
-                        {saveProgress.percent === null
-                          ? copy.progress.unknownPercent
-                          : formatMessage(copy.progress.percent, {
-                              value: Math.round(saveProgress.percent),
-                            })}
-                      </p>
-                    </div>
-                    <p className="mt-2 text-sm font-medium">{getSaveProgressLabel(saveProgress)}</p>
-                    <ProgressBar progress={saveProgress} />
-                    <div className="mt-3 flex flex-wrap gap-x-6 gap-y-2 text-sm text-[var(--muted)]">
-                      <span>
-                        {copy.progress.fileSize}: {formatBytes(mp3File?.size ?? null)}
-                      </span>
-                      {saveProgress.resultBytes ? (
-                        <span>
-                          {copy.progress.downloadSize}: {formatBytes(saveProgress.resultBytes)}
-                        </span>
-                      ) : null}
-                    </div>
+                <div className="mt-5 grid gap-5 lg:grid-cols-[320px_minmax(0,1fr)] lg:items-start">
+                  <div className="flex aspect-square max-w-[320px] items-center justify-center overflow-hidden rounded-[24px] border border-[var(--border)] bg-[var(--surface-soft)]">
+                    {previewUrl ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={previewUrl}
+                        alt={copy.cover.previewAlt}
+                        className="h-full w-full object-cover"
+                      />
+                    ) : (
+                      <div className="px-8 text-center text-sm leading-6 text-[var(--muted)]">
+                        {copy.cover.empty}
+                      </div>
+                    )}
                   </div>
-                ) : null}
 
-                <div className="mt-5 grid gap-3 sm:grid-cols-2">
-                  <div className="rounded-[18px] border border-[var(--border)] bg-[var(--surface-soft)] p-4">
-                    <p className="text-xs uppercase tracking-[0.2em] text-[var(--muted)]">
-                      {copy.cover.mime}
-                    </p>
-                    <p className="mt-2 text-sm">
-                      {metadata?.cover_mime_type ?? coverFile?.type ?? copy.cover.none}
-                    </p>
-                  </div>
-                  <div className="rounded-[18px] border border-[var(--border)] bg-[var(--surface-soft)] p-4">
-                    <p className="text-xs uppercase tracking-[0.2em] text-[var(--muted)]">
-                      {copy.cover.newImage}
-                    </p>
-                    <p className="mt-2 text-sm">{coverFile?.name ?? copy.cover.notSelected}</p>
+                  <div className="flex min-h-full flex-col justify-start">
+                    <div className="flex flex-wrap gap-3">
+                      <button
+                        type="button"
+                        onClick={() => coverInputRef.current?.click()}
+                        className="rounded-sm border border-[var(--border)] px-5 py-3 text-sm font-medium transition hover:border-[var(--accent)] hover:text-[var(--accent)]"
+                      >
+                        {copy.actions.selectCover}
+                      </button>
+                    </div>
+
+                    <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                      <div className="rounded-[18px] border border-[var(--border)] bg-[var(--surface-soft)] p-4">
+                        <p className="text-xs uppercase tracking-[0.2em] text-[var(--muted)]">
+                          {copy.cover.mime}
+                        </p>
+                        <p className="mt-2 text-sm">
+                          {metadata?.cover_mime_type ?? coverFile?.type ?? copy.cover.none}
+                        </p>
+                      </div>
+                      <div className="rounded-[18px] border border-[var(--border)] bg-[var(--surface-soft)] p-4">
+                        <p className="text-xs uppercase tracking-[0.2em] text-[var(--muted)]">
+                          {copy.cover.newImage}
+                        </p>
+                        <p className="mt-2 text-sm break-all">
+                          {coverFile?.name ?? copy.cover.notSelected}
+                        </p>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -876,16 +846,58 @@ export default function Home() {
                     <span className="text-sm font-medium text-[var(--muted)]">
                       {copy.metadata.commentLabel}
                     </span>
-                    <textarea
-                      rows={5}
+                    <input
+                      type="text"
                       name="comment"
                       value={form.comment}
                       onChange={handleFieldChange}
                       placeholder={copy.metadata.commentPlaceholder}
-                      className="mt-3 w-full resize-none rounded-sm border border-[var(--border)] bg-[var(--surface)] px-4 py-3 text-sm outline-none transition focus:border-[var(--accent)]"
+                      className="mt-3 w-full rounded-sm border border-[var(--border)] bg-[var(--surface)] px-4 py-3 text-sm outline-none transition focus:border-[var(--accent)]"
                     />
                   </label>
                 </div>
+              </div>
+
+              <div className="rounded-[28px] border border-[var(--border)] bg-[var(--surface)] px-6 py-5 text-center shadow-[0_18px_40px_rgba(13,24,45,0.05)] dark:shadow-none">
+                {saveProgress.phase !== "idle" ? (
+                  <div className="mx-auto max-w-[720px]">
+                    <div className="flex items-center justify-between gap-4">
+                      <p className="text-xs uppercase tracking-[0.2em] text-[var(--muted)]">
+                        {copy.progress.savePanelTitle}
+                      </p>
+                      <p className="text-sm font-medium text-[var(--foreground)]">
+                        {saveProgress.percent === null
+                          ? copy.progress.unknownPercent
+                          : formatMessage(copy.progress.percent, {
+                              value: Math.round(saveProgress.percent),
+                            })}
+                      </p>
+                    </div>
+                    <p className="mt-2 text-sm font-medium">{getSaveProgressLabel(saveProgress)}</p>
+                    <ProgressBar progress={saveProgress} />
+                    <div className="mt-3 flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm text-[var(--muted)]">
+                      <span>
+                        {copy.progress.fileSize}: {formatBytes(mp3File?.size ?? null)}
+                      </span>
+                      {saveProgress.resultBytes ? (
+                        <span>
+                          {copy.progress.downloadSize}: {formatBytes(saveProgress.resultBytes)}
+                        </span>
+                      ) : null}
+                    </div>
+                  </div>
+                ) : null}
+
+                <button
+                  type="button"
+                  onClick={handleSave}
+                  disabled={isSaving}
+                  className={`mx-auto rounded-sm bg-[var(--accent)] px-6 py-3 text-sm font-medium text-white transition hover:bg-[var(--accent-strong)] disabled:cursor-not-allowed disabled:opacity-60 ${
+                    saveProgress.phase !== "idle" ? "mt-5" : "mt-0"
+                  }`}
+                >
+                  {isSaving ? copy.actions.saving : copy.actions.save}
+                </button>
               </div>
             </div>
           </div>
