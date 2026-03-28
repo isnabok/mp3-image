@@ -14,6 +14,7 @@ backend/.mypy_cache/
 backend/.ruff_cache/
 backend/.env
 backend/.env.*
+!backend/.env.example
 backend/uploads/
 
 # python
