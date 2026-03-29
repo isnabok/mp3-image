@@ -899,7 +899,7 @@ export default function Home() {
             {hasLoadedFile ? (
               <div className="grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
                 <SectionCard className="p-5">
-                  <div className="flex items-start gap-4">
+                  <div className="flex h-full items-center gap-4">
                     <div
                       className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl ${
                         error
@@ -909,7 +909,7 @@ export default function Home() {
                     >
                       {error ? <AlertIcon /> : <CheckIcon />}
                     </div>
-                    <div className="min-w-0">
+                    <div className="min-w-0 self-center">
                       <p className="text-xs uppercase tracking-[0.22em] text-[var(--muted)]">
                         {copy.status.panelTitle}
                       </p>
@@ -927,7 +927,7 @@ export default function Home() {
                 </SectionCard>
 
                 <SectionCard className="p-5">
-                  <div className="flex items-start gap-4">
+                  <div className="flex h-full items-center gap-4">
                     <div
                       className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl ${
                         warnings.length > 0
@@ -937,7 +937,7 @@ export default function Home() {
                     >
                       {warnings.length > 0 ? <AlertIcon /> : <CheckIcon />}
                     </div>
-                    <div className="min-w-0">
+                    <div className="min-w-0 self-center">
                       <p className="text-xs uppercase tracking-[0.22em] text-[var(--muted)]">
                         {copy.warnings.panelTitle}
                       </p>
@@ -971,7 +971,7 @@ export default function Home() {
                   </div>
 
                   <div className="mt-6 grid gap-6 lg:grid-cols-[360px_minmax(0,1fr)]">
-                    <div className="flex aspect-square max-w-[360px] items-center justify-center overflow-hidden rounded-[28px] border border-[var(--border)] bg-[var(--surface-soft)]">
+                    <div className="flex aspect-square w-full max-w-full items-center justify-center overflow-hidden rounded-[28px] border border-[var(--border)] bg-[var(--surface-soft)] sm:max-w-[280px]">
                       {previewUrl ? (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img
