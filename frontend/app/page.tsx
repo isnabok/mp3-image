@@ -388,6 +388,7 @@ export default function Home() {
 
   const previewUrl = localCoverPreviewUrl ?? metadata?.cover_data_url ?? null;
   const hasLoadedFile = Boolean(mp3File && metadata);
+  const shouldShowPreloadFeedback = !hasLoadedFile && (Boolean(mp3File) || readProgress.phase !== "idle" || Boolean(error));
 
   const resetEditor = () => {
     setMp3File(null);
@@ -701,7 +702,7 @@ export default function Home() {
           ) : null}
 
           <div className={`mx-auto ${hasLoadedFile ? "mt-0" : "mt-10"} space-y-6`}>
-            {!hasLoadedFile ? (
+            {shouldShowPreloadFeedback ? (
               <SectionCard className="p-5">
                 <div className="grid gap-5 md:grid-cols-[1.2fr_0.8fr]">
                   <div className="flex items-start gap-4">
