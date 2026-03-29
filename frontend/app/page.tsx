@@ -782,6 +782,66 @@ export default function Home() {
             )}
 
             {!hasLoadedFile ? (
+              <SectionCard className="p-5">
+                <div className="grid gap-5 md:grid-cols-[1.2fr_0.8fr]">
+                  <div className="flex items-start gap-4">
+                    <div
+                      className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl ${
+                        error
+                          ? "bg-[var(--danger-soft)] text-[var(--danger)]"
+                          : "bg-[var(--accent-glow)] text-[var(--accent)]"
+                      }`}
+                    >
+                      {error ? <AlertIcon /> : <CheckIcon />}
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-xs uppercase tracking-[0.22em] text-[var(--muted)]">
+                        {copy.status.panelTitle}
+                      </p>
+                      <p className="mt-2 text-base font-medium leading-7 text-[var(--foreground)]">
+                        {status}
+                      </p>
+                      {mp3File ? (
+                        <p className="mt-2 text-sm text-[var(--muted)]">
+                          {formatMessage(copy.status.currentFile, { filename: mp3File.name })}
+                        </p>
+                      ) : null}
+                      {error ? <p className="mt-3 text-sm text-[var(--danger)]">{error}</p> : null}
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-4">
+                    <div
+                      className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl ${
+                        warnings.length > 0
+                          ? "bg-[var(--danger-soft)] text-[var(--danger)]"
+                          : "bg-[var(--success-soft)] text-[var(--success)]"
+                      }`}
+                    >
+                      {warnings.length > 0 ? <AlertIcon /> : <CheckIcon />}
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-xs uppercase tracking-[0.22em] text-[var(--muted)]">
+                        {copy.warnings.panelTitle}
+                      </p>
+                      {warnings.length > 0 ? (
+                        <div className="mt-3 space-y-2">
+                          {warnings.map((warning) => (
+                            <p key={warning} className="text-sm text-[var(--muted)]">
+                              {warning}
+                            </p>
+                          ))}
+                        </div>
+                      ) : (
+                        <p className="mt-3 text-sm text-[var(--muted)]">{copy.warnings.empty}</p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </SectionCard>
+            ) : null}
+
+            {!hasLoadedFile ? (
               <div className="grid gap-4 md:grid-cols-3">
                 {copy.features.items.map((feature, index) => (
                   <SectionCard key={feature.title} className="p-5">
@@ -803,65 +863,67 @@ export default function Home() {
               </div>
             ) : null}
 
-            <div className={`grid gap-4 ${hasLoadedFile ? "lg:grid-cols-[1.2fr_0.8fr]" : "md:grid-cols-[1.2fr_0.8fr]"}`}>
-              <SectionCard className="p-5">
-                <div className="flex items-start gap-4">
-                  <div
-                    className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl ${
-                      error
-                        ? "bg-[var(--danger-soft)] text-[var(--danger)]"
-                        : "bg-[var(--accent-glow)] text-[var(--accent)]"
-                    }`}
-                  >
-                    {error ? <AlertIcon /> : <CheckIcon />}
-                  </div>
-                  <div className="min-w-0">
-                    <p className="text-xs uppercase tracking-[0.22em] text-[var(--muted)]">
-                      {copy.status.panelTitle}
-                    </p>
-                    <p className="mt-2 text-base font-medium leading-7 text-[var(--foreground)]">
-                      {status}
-                    </p>
-                    {mp3File ? (
-                      <p className="mt-2 text-sm text-[var(--muted)]">
-                        {formatMessage(copy.status.currentFile, { filename: mp3File.name })}
+            {hasLoadedFile ? (
+              <div className="grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
+                <SectionCard className="p-5">
+                  <div className="flex items-start gap-4">
+                    <div
+                      className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl ${
+                        error
+                          ? "bg-[var(--danger-soft)] text-[var(--danger)]"
+                          : "bg-[var(--accent-glow)] text-[var(--accent)]"
+                      }`}
+                    >
+                      {error ? <AlertIcon /> : <CheckIcon />}
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-xs uppercase tracking-[0.22em] text-[var(--muted)]">
+                        {copy.status.panelTitle}
                       </p>
-                    ) : null}
-                    {error ? <p className="mt-3 text-sm text-[var(--danger)]">{error}</p> : null}
+                      <p className="mt-2 text-base font-medium leading-7 text-[var(--foreground)]">
+                        {status}
+                      </p>
+                      {mp3File ? (
+                        <p className="mt-2 text-sm text-[var(--muted)]">
+                          {formatMessage(copy.status.currentFile, { filename: mp3File.name })}
+                        </p>
+                      ) : null}
+                      {error ? <p className="mt-3 text-sm text-[var(--danger)]">{error}</p> : null}
+                    </div>
                   </div>
-                </div>
-              </SectionCard>
+                </SectionCard>
 
-              <SectionCard className="p-5">
-                <div className="flex items-start gap-4">
-                  <div
-                    className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl ${
-                      warnings.length > 0
-                        ? "bg-[var(--danger-soft)] text-[var(--danger)]"
-                        : "bg-[var(--success-soft)] text-[var(--success)]"
-                    }`}
-                  >
-                    {warnings.length > 0 ? <AlertIcon /> : <CheckIcon />}
+                <SectionCard className="p-5">
+                  <div className="flex items-start gap-4">
+                    <div
+                      className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl ${
+                        warnings.length > 0
+                          ? "bg-[var(--danger-soft)] text-[var(--danger)]"
+                          : "bg-[var(--success-soft)] text-[var(--success)]"
+                      }`}
+                    >
+                      {warnings.length > 0 ? <AlertIcon /> : <CheckIcon />}
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-xs uppercase tracking-[0.22em] text-[var(--muted)]">
+                        {copy.warnings.panelTitle}
+                      </p>
+                      {warnings.length > 0 ? (
+                        <div className="mt-3 space-y-2">
+                          {warnings.map((warning) => (
+                            <p key={warning} className="text-sm text-[var(--muted)]">
+                              {warning}
+                            </p>
+                          ))}
+                        </div>
+                      ) : (
+                        <p className="mt-3 text-sm text-[var(--muted)]">{copy.warnings.empty}</p>
+                      )}
+                    </div>
                   </div>
-                  <div className="min-w-0">
-                    <p className="text-xs uppercase tracking-[0.22em] text-[var(--muted)]">
-                      {copy.warnings.panelTitle}
-                    </p>
-                    {warnings.length > 0 ? (
-                      <div className="mt-3 space-y-2">
-                        {warnings.map((warning) => (
-                          <p key={warning} className="text-sm text-[var(--muted)]">
-                            {warning}
-                          </p>
-                        ))}
-                      </div>
-                    ) : (
-                      <p className="mt-3 text-sm text-[var(--muted)]">{copy.warnings.empty}</p>
-                    )}
-                  </div>
-                </div>
-              </SectionCard>
-            </div>
+                </SectionCard>
+              </div>
+            ) : null}
 
             {hasLoadedFile ? (
               <div className="space-y-6">
