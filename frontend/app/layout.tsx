@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Geist } from "next/font/google";
+import Script from "next/script";
 import { CookieConsentBanner } from "@/components/cookie-consent-banner";
 import { siteMessages } from "@/lib/i18n";
 import { buildAbsoluteUrl, siteConfig } from "@/lib/site";
@@ -9,6 +10,10 @@ const geist = Geist({
   variable: "--font-sans",
   subsets: ["latin"],
 });
+
+const googleSiteVerification = process.env.SITE_VERIFICATION_GOOGLE?.trim() || undefined;
+const bingSiteVerification = process.env.SITE_VERIFICATION_BING?.trim() || undefined;
+const googleAnalyticsId = process.env.GOOGLE_ANALYTICS_ID?.trim() || undefined;
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.siteUrl),
@@ -54,6 +59,14 @@ export const metadata: Metadata = {
     description: siteMessages.meta.description,
     images: [buildAbsoluteUrl(siteConfig.twitterImagePath)],
   },
+  verification: {
+    google: googleSiteVerification,
+    other: bingSiteVerification
+      ? {
+          "msvalidate.01": bingSiteVerification,
+        }
+      : undefined,
+  },
   robots: {
     index: true,
     follow: true,
@@ -89,6 +102,22 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col">
         {children}
         <CookieConsentBanner />
+        {googleAnalyticsId ? (
+          <>
+            <Script
+              src={`https://www.googletagmanager.com/gtag/js?id=${googleAnalyticsId}`}
+              strategy="afterInteractive"
+            />
+            <Script id="google-analytics" strategy="afterInteractive">
+              {`
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', '${googleAnalyticsId}');
+              `}
+            </Script>
+          </>
+        ) : null}
       </body>
     </html>
   );
