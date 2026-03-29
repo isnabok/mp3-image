@@ -26,14 +26,14 @@ export default async function ContentLayout({
             >
               <span className="text-lg font-semibold">♪</span>
             </Link>
-            <div>
+            <Link href="/" className="block transition hover:text-[var(--accent)]">
               <p className="text-[0.95rem] font-semibold tracking-[-0.03em] text-[var(--foreground)] md:text-[1.15rem]">
                 {siteMessages.header.title}
               </p>
               <p className="mt-0.5 text-[0.68rem] text-[var(--muted)] md:text-[0.74rem]">
                 {siteMessages.header.subtitle}
               </p>
-            </div>
+            </Link>
           </div>
 
           <div className="flex items-center justify-end gap-3">

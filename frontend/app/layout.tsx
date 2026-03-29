@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Geist } from "next/font/google";
+import { CookieConsentBanner } from "@/components/cookie-consent-banner";
 import { siteMessages } from "@/lib/i18n";
 import { buildAbsoluteUrl, siteConfig } from "@/lib/site";
 import "./globals.css";
@@ -85,7 +86,10 @@ export default function RootLayout({
       suppressHydrationWarning
       className={`${geist.variable} dark h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        {children}
+        <CookieConsentBanner />
+      </body>
     </html>
   );
 }

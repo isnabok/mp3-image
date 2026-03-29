@@ -149,5 +149,11 @@
     "menuTitle": "Pages",
     "openMenu": "Open pages menu",
     "closeMenu": "Close pages menu"
+  },
+  "cookies": {
+    "bannerTitle": "Cookies",
+    "bannerText": "This site uses cookies and similar technologies for essential functionality and to remember your cookie consent preference.",
+    "learnMore": "Cookie policy",
+    "accept": "Accept"
   }
 }

@@ -6,6 +6,7 @@ import { ContentLinks, type ContentLinkItem } from "@/components/content-links";
 import { MobileContentMenu } from "@/components/mobile-content-menu";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { formatMessage, siteMessages } from "@/lib/i18n";
+import Link from "next/link";
 
 type MetadataForm = {
   outputFilename: string;
@@ -75,6 +76,7 @@ const EMPTY_PROGRESS: OperationProgress = {
 type HomeEditorProps = {
   headerPages: ContentLinkItem[];
   footerPages: ContentLinkItem[];
+  children?: ReactNode;
 };
 
 function getErrorMessage(error: unknown): string {
@@ -367,7 +369,7 @@ function SectionCard({
   );
 }
 
-export default function HomeEditor({ headerPages, footerPages }: HomeEditorProps) {
+export default function HomeEditor({ headerPages, footerPages, children }: HomeEditorProps) {
   const mp3InputRef = useRef<HTMLInputElement>(null);
   const coverInputRef = useRef<HTMLInputElement>(null);
 
@@ -674,12 +676,12 @@ export default function HomeEditor({ headerPages, footerPages }: HomeEditorProps
             <div className="flex h-10 w-10 items-center justify-center rounded-[14px] bg-[linear-gradient(180deg,var(--accent),var(--accent-strong))] text-[var(--accent-contrast)] shadow-[0_10px_24px_var(--accent-glow)]">
               <MusicIcon />
             </div>
-            <div>
+            <Link href="/" className="block transition hover:text-[var(--accent)]">
               <p className="text-[0.95rem] font-semibold tracking-[-0.03em] text-[var(--foreground)] md:text-[1.15rem] md:leading-none">
                 {headerTitle}
               </p>
               <p className="mt-0.5 text-[0.68rem] text-[var(--muted)] md:text-[0.74rem]">{headerSubtitle}</p>
-            </div>
+            </Link>
           </div>
 
           <div className="flex items-center gap-3">
@@ -1134,6 +1136,8 @@ export default function HomeEditor({ headerPages, footerPages }: HomeEditorProps
           </div>
         </div>
       </section>
+
+      {children}
 
       <footer className="border-t border-[var(--border)] bg-[var(--surface)]/50 py-6">
         <div className="container-shell flex flex-col items-center justify-between gap-4 md:flex-row">

@@ -30,6 +30,23 @@ export type ContentPage = ContentFrontmatter & {
   filepath: string;
 };
 
+export type HomeContentFrontmatter = {
+  title: string;
+  description: string;
+  keywords?: string[];
+  section?: string;
+  schemaType?: "WebPage" | "FAQPage";
+  faq?: Array<{
+    question: string;
+    answer: string;
+  }>;
+};
+
+export type HomeContent = HomeContentFrontmatter & {
+  body: string;
+  filepath: string;
+};
+
 export type ContentNavigationPage = {
   slug: string;
   title: string;
@@ -38,6 +55,7 @@ export type ContentNavigationPage = {
 export type ContentNavigationPosition = "header" | "footer";
 
 const CONTENT_DIR = path.join(process.cwd(), "content", "pages");
+const HOME_CONTENT_FILE = path.join(process.cwd(), "content", "home.mdx");
 
 function isValidFrontmatter(data: unknown): data is ContentFrontmatter {
   if (!data || typeof data !== "object") {
@@ -107,10 +125,71 @@ function normalizeFrontmatter(data: unknown, filepath: string): ContentFrontmatt
   };
 }
 
+function isValidHomeFrontmatter(data: unknown): data is HomeContentFrontmatter {
+  if (!data || typeof data !== "object") {
+    return false;
+  }
+
+  const candidate = data as Record<string, unknown>;
+  return (
+    typeof candidate.title === "string" &&
+    typeof candidate.description === "string" &&
+    (candidate.keywords === undefined ||
+      (Array.isArray(candidate.keywords) &&
+        candidate.keywords.every((keyword) => typeof keyword === "string"))) &&
+    (candidate.section === undefined || typeof candidate.section === "string") &&
+    (candidate.schemaType === undefined ||
+      candidate.schemaType === "WebPage" ||
+      candidate.schemaType === "FAQPage") &&
+    (candidate.faq === undefined ||
+      (Array.isArray(candidate.faq) &&
+        candidate.faq.every(
+          (item) =>
+            item &&
+            typeof item === "object" &&
+            typeof (item as Record<string, unknown>).question === "string" &&
+            typeof (item as Record<string, unknown>).answer === "string",
+        )))
+  );
+}
+
+function normalizeHomeFrontmatter(data: unknown, filepath: string): HomeContentFrontmatter {
+  if (!isValidHomeFrontmatter(data)) {
+    throw new Error(
+      `Invalid frontmatter in "${filepath}". Required fields: title and description.`,
+    );
+  }
+
+  return {
+    title: data.title.trim(),
+    description: data.description.trim(),
+    keywords: data.keywords?.map((keyword) => keyword.trim()).filter(Boolean) ?? undefined,
+    section: data.section?.trim() || undefined,
+    schemaType: data.schemaType ?? "WebPage",
+    faq:
+      data.faq?.map((item) => ({
+        question: item.question.trim(),
+        answer: item.answer.trim(),
+      })) ?? undefined,
+  };
+}
+
 async function readContentFile(filepath: string): Promise<ContentPage> {
   const fileContents = await fs.readFile(filepath, "utf8");
   const { content, data } = matter(fileContents);
   const frontmatter = normalizeFrontmatter(data, filepath);
+
+  return {
+    ...frontmatter,
+    body: content,
+    filepath,
+  };
+}
+
+async function readHomeContentFile(filepath: string): Promise<HomeContent> {
+  const fileContents = await fs.readFile(filepath, "utf8");
+  const { content, data } = matter(fileContents);
+  const frontmatter = normalizeHomeFrontmatter(data, filepath);
 
   return {
     ...frontmatter,
@@ -162,3 +241,7 @@ export const getContentNavigationPages = cache(
     }));
   },
 );
+
+export const getHomeContent = cache(async (): Promise<HomeContent> => {
+  return readHomeContentFile(HOME_CONTENT_FILE);
+});

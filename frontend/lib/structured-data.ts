@@ -1,4 +1,4 @@
-import type { ContentPage } from "@/lib/content";
+import type { ContentPage, HomeContent } from "@/lib/content";
 import { buildAbsoluteUrl, siteConfig } from "@/lib/site";
 
 type JsonLd = Record<string, unknown>;
@@ -83,5 +83,41 @@ export function getPageStructuredData(page: ContentPage): JsonLd {
       url: siteConfig.siteUrl,
     },
     about: page.section,
+  };
+}
+
+export function getHomePageStructuredData(home: HomeContent): JsonLd {
+  return {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    name: siteConfig.name,
+    description: home.description,
+    url: buildAbsoluteUrl("/"),
+    inLanguage: siteConfig.locale,
+    isPartOf: {
+      "@type": "WebSite",
+      name: siteConfig.name,
+      url: siteConfig.siteUrl,
+    },
+    about: home.section,
+  };
+}
+
+export function getHomeFaqStructuredData(home: HomeContent): JsonLd | null {
+  if (!home.faq?.length) {
+    return null;
+  }
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: home.faq.map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: item.answer,
+      },
+    })),
   };
 }
