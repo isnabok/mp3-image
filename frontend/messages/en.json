@@ -141,5 +141,13 @@
   },
   "footer": {
     "text": "MP3 Tag Editor keeps the production flow simple: upload, edit, and download."
+  },
+  "content": {
+    "backToEditor": "Back to editor",
+    "home": "Home",
+    "breadcrumbs": "Breadcrumbs",
+    "menuTitle": "Pages",
+    "openMenu": "Open pages menu",
+    "closeMenu": "Close pages menu"
   }
 }
