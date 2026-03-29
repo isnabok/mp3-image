@@ -55,6 +55,10 @@ Recommended values for local Docker:
 
 ```env
 NEXT_PUBLIC_API_BASE_URL=/api/mp3
+NEXT_PUBLIC_SITE_LOCALE=ru
+SITE_VERIFICATION_GOOGLE=
+SITE_VERIFICATION_BING=
+GOOGLE_ANALYTICS_ID=
 BACKEND_INTERNAL_API_URL=http://backend:8000
 API_SHARED_TOKEN=change-me-long-random-token
 BACKEND_CORS_ORIGINS=http://localhost:3000
@@ -71,6 +75,10 @@ This repo is ready for a Compose-based Dokploy deployment.
 
 ```env
 NEXT_PUBLIC_API_BASE_URL=/api/mp3
+NEXT_PUBLIC_SITE_LOCALE=ru
+SITE_VERIFICATION_GOOGLE=
+SITE_VERIFICATION_BING=
+GOOGLE_ANALYTICS_ID=
 BACKEND_INTERNAL_API_URL=http://backend:8000
 API_SHARED_TOKEN=change-me-long-random-token
 BACKEND_CORS_ORIGINS=https://your-frontend-domain
@@ -84,3 +92,4 @@ Important:
 - `API_SHARED_TOKEN` must be identical in both frontend and backend containers
 - `BACKEND_INTERNAL_API_URL` should stay on the internal Docker network, for example `http://backend:8000`
 - `BACKEND_CORS_ORIGINS` should still include the frontend domain if you expose the backend publicly for diagnostics
+- `SITE_VERIFICATION_GOOGLE`, `SITE_VERIFICATION_BING`, and `GOOGLE_ANALYTICS_ID` are used during the frontend build, so rebuild the frontend container after changing them
