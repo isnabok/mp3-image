@@ -702,6 +702,66 @@ export default function Home() {
 
           <div className={`mx-auto ${hasLoadedFile ? "mt-0" : "mt-10"} space-y-6`}>
             {!hasLoadedFile ? (
+              <SectionCard className="p-5">
+                <div className="grid gap-5 md:grid-cols-[1.2fr_0.8fr]">
+                  <div className="flex items-start gap-4">
+                    <div
+                      className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl ${
+                        error
+                          ? "bg-[var(--danger-soft)] text-[var(--danger)]"
+                          : "bg-[var(--accent-glow)] text-[var(--accent)]"
+                      }`}
+                    >
+                      {error ? <AlertIcon /> : <CheckIcon />}
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-xs uppercase tracking-[0.22em] text-[var(--muted)]">
+                        {copy.status.panelTitle}
+                      </p>
+                      <p className="mt-2 text-base font-medium leading-7 text-[var(--foreground)]">
+                        {status}
+                      </p>
+                      {mp3File ? (
+                        <p className="mt-2 text-sm text-[var(--muted)]">
+                          {formatMessage(copy.status.currentFile, { filename: mp3File.name })}
+                        </p>
+                      ) : null}
+                      {error ? <p className="mt-3 text-sm text-[var(--danger)]">{error}</p> : null}
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-4">
+                    <div
+                      className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl ${
+                        warnings.length > 0
+                          ? "bg-[var(--danger-soft)] text-[var(--danger)]"
+                          : "bg-[var(--success-soft)] text-[var(--success)]"
+                      }`}
+                    >
+                      {warnings.length > 0 ? <AlertIcon /> : <CheckIcon />}
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-xs uppercase tracking-[0.22em] text-[var(--muted)]">
+                        {copy.warnings.panelTitle}
+                      </p>
+                      {warnings.length > 0 ? (
+                        <div className="mt-3 space-y-2">
+                          {warnings.map((warning) => (
+                            <p key={warning} className="text-sm text-[var(--muted)]">
+                              {warning}
+                            </p>
+                          ))}
+                        </div>
+                      ) : (
+                        <p className="mt-3 text-sm text-[var(--muted)]">{copy.warnings.empty}</p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </SectionCard>
+            ) : null}
+
+            {!hasLoadedFile ? (
               <SectionCard className="overflow-hidden p-0">
                 <button
                   type="button"
@@ -815,66 +875,6 @@ export default function Home() {
             )}
 
             {!hasLoadedFile ? (
-              <SectionCard className="p-5">
-                <div className="grid gap-5 md:grid-cols-[1.2fr_0.8fr]">
-                  <div className="flex items-start gap-4">
-                    <div
-                      className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl ${
-                        error
-                          ? "bg-[var(--danger-soft)] text-[var(--danger)]"
-                          : "bg-[var(--accent-glow)] text-[var(--accent)]"
-                      }`}
-                    >
-                      {error ? <AlertIcon /> : <CheckIcon />}
-                    </div>
-                    <div className="min-w-0">
-                      <p className="text-xs uppercase tracking-[0.22em] text-[var(--muted)]">
-                        {copy.status.panelTitle}
-                      </p>
-                      <p className="mt-2 text-base font-medium leading-7 text-[var(--foreground)]">
-                        {status}
-                      </p>
-                      {mp3File ? (
-                        <p className="mt-2 text-sm text-[var(--muted)]">
-                          {formatMessage(copy.status.currentFile, { filename: mp3File.name })}
-                        </p>
-                      ) : null}
-                      {error ? <p className="mt-3 text-sm text-[var(--danger)]">{error}</p> : null}
-                    </div>
-                  </div>
-
-                  <div className="flex items-start gap-4">
-                    <div
-                      className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl ${
-                        warnings.length > 0
-                          ? "bg-[var(--danger-soft)] text-[var(--danger)]"
-                          : "bg-[var(--success-soft)] text-[var(--success)]"
-                      }`}
-                    >
-                      {warnings.length > 0 ? <AlertIcon /> : <CheckIcon />}
-                    </div>
-                    <div className="min-w-0">
-                      <p className="text-xs uppercase tracking-[0.22em] text-[var(--muted)]">
-                        {copy.warnings.panelTitle}
-                      </p>
-                      {warnings.length > 0 ? (
-                        <div className="mt-3 space-y-2">
-                          {warnings.map((warning) => (
-                            <p key={warning} className="text-sm text-[var(--muted)]">
-                              {warning}
-                            </p>
-                          ))}
-                        </div>
-                      ) : (
-                        <p className="mt-3 text-sm text-[var(--muted)]">{copy.warnings.empty}</p>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </SectionCard>
-            ) : null}
-
-            {!hasLoadedFile ? (
               <div className="grid gap-4 md:grid-cols-3">
                 {copy.features.items.map((feature, index) => (
                   <SectionCard key={feature.title} className="p-5">
@@ -897,8 +897,8 @@ export default function Home() {
             ) : null}
 
             {hasLoadedFile ? (
-              <div className="grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
-                <SectionCard className="p-5">
+              <SectionCard className="p-5">
+                <div className="grid gap-5 lg:grid-cols-[1.2fr_0.8fr]">
                   <div className="flex h-full items-center gap-4">
                     <div
                       className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl ${
@@ -924,9 +924,7 @@ export default function Home() {
                       {error ? <p className="mt-3 text-sm text-[var(--danger)]">{error}</p> : null}
                     </div>
                   </div>
-                </SectionCard>
 
-                <SectionCard className="p-5">
                   <div className="flex h-full items-center gap-4">
                     <div
                       className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl ${
@@ -954,8 +952,8 @@ export default function Home() {
                       )}
                     </div>
                   </div>
-                </SectionCard>
-              </div>
+                </div>
+              </SectionCard>
             ) : null}
 
             {hasLoadedFile ? (
@@ -1016,6 +1014,12 @@ export default function Home() {
                           </p>
                         </div>
                       </div>
+
+                      <div className="rounded-[22px] border border-[var(--border)] bg-[var(--surface-soft)] p-4">
+                        <p className="text-sm leading-7 text-[var(--muted)]">
+                          {copy.cover.instructions}
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </SectionCard>
@@ -1055,7 +1059,7 @@ export default function Home() {
                       </label>
                     ))}
 
-                    <label className="rounded-[24px] border border-[var(--border)] bg-[var(--surface-soft)] p-5 md:col-span-2">
+                    <label className="rounded-[24px] border border-[var(--border)] bg-[var(--surface-soft)] p-5">
                       <span className="text-sm font-medium text-[var(--muted)]">
                         {copy.metadata.commentLabel}
                       </span>
