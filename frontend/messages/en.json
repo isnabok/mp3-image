@@ -5,10 +5,14 @@
     "description": "Upload MP3 files, edit ID3 tags, change the download filename, and save an updated file with new cover art."
   },
   "header": {
-    "eyebrow": "MP3 Cover Editor"
+    "eyebrow": "MP3 Cover Editor",
+    "title": "MP3 Tag Editor",
+    "subtitle": "Modern metadata workflow",
+    "badge": "Pro Mode"
   },
   "actions": {
     "selectMp3": "Choose MP3",
+    "changeMp3": "Choose another MP3",
     "selectCover": "Choose new cover",
     "save": "Save and download",
     "saving": "Saving...",
@@ -20,12 +24,35 @@
     "dropzoneIdle": "Drop your MP3 here",
     "dropzoneReading": "Reading metadata...",
     "dropzoneDescription": "Or click this area to choose a file from your computer. After upload, all editing fields will appear below.",
+    "dropzoneSupport": "Supported format: MP3",
     "steps": [
       "Upload one MP3 file.",
       "Wait until the current tags are loaded.",
       "Update the filename, metadata, and cover.",
       "Download the finished MP3."
     ]
+  },
+  "features": {
+    "items": [
+      {
+        "title": "Fast processing",
+        "description": "Read tags, update artwork, and export in one clean flow."
+      },
+      {
+        "title": "Metadata editor",
+        "description": "Change filename, title, artist, album, genre, year, track, and comment."
+      },
+      {
+        "title": "Cover workflow",
+        "description": "Preview the current artwork, replace it, and keep player-friendly export settings."
+      }
+    ]
+  },
+  "file": {
+    "readyTitle": "Current file",
+    "readyDescription": "Metadata is loaded. You can keep editing tags and cover art.",
+    "name": "File",
+    "size": "Size"
   },
   "status": {
     "panelTitle": "Status",
@@ -109,5 +136,8 @@
         "placeholder": "1/12"
       }
     }
+  },
+  "footer": {
+    "text": "MP3 Tag Editor keeps the production flow simple: upload, edit, and download."
   }
 }

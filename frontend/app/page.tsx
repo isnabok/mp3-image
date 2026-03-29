@@ -1,6 +1,6 @@
 "use client";
 
-import { ChangeEvent, DragEvent, useEffect, useRef, useState } from "react";
+import { ChangeEvent, DragEvent, ReactNode, useEffect, useRef, useState } from "react";
 
 import { ThemeToggle } from "@/components/theme-toggle";
 import { formatMessage, siteMessages } from "@/lib/i18n";
@@ -39,6 +39,8 @@ type OperationProgress = {
 
 const copy = siteMessages;
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "/api/mp3";
+const headerTitle = copy.header.title;
+const headerSubtitle = copy.header.subtitle;
 const FIELD_KEYS = [
   "outputFilename",
   "title",
@@ -206,9 +208,9 @@ function ProgressBar({ progress }: { progress: OperationProgress }) {
   const width = progress.percent === null ? "45%" : `${progress.percent}%`;
 
   return (
-    <div className="mt-3 h-2.5 overflow-hidden rounded-full bg-[var(--surface-soft)]">
+    <div className="mt-3 h-2 overflow-hidden rounded-full bg-white/8">
       <div
-        className={`h-full rounded-full bg-[var(--accent)] transition-all duration-300 ${
+        className={`h-full rounded-full bg-[linear-gradient(90deg,var(--accent),#7cf0df)] transition-all duration-300 ${
           progress.percent === null ? "animate-pulse" : ""
         }`}
         style={{ width }}
@@ -217,130 +219,133 @@ function ProgressBar({ progress }: { progress: OperationProgress }) {
   );
 }
 
-function HeroShapes() {
+function IconWrap({ children }: { children: ReactNode }) {
   return (
-    <>
-      <div className="pointer-events-none absolute right-0 top-0 z-[-1] opacity-60 dark:opacity-70">
-        <svg
-          width="450"
-          height="556"
-          viewBox="0 0 450 556"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <circle cx="277" cy="63" r="225" fill="url(#heroGradientA)" />
-          <circle cx="17.9997" cy="182" r="18" fill="url(#heroGradientB)" />
-          <circle cx="76.9997" cy="288" r="34" fill="url(#heroGradientC)" />
-          <circle
-            cx="325.486"
-            cy="302.87"
-            r="180"
-            transform="rotate(-37.6852 325.486 302.87)"
-            fill="url(#heroGradientD)"
-          />
-          <defs>
-            <linearGradient
-              id="heroGradientA"
-              x1="-54.5003"
-              y1="-178"
-              x2="222"
-              y2="288"
-              gradientUnits="userSpaceOnUse"
-            >
-              <stop stopColor="#4A6CF7" />
-              <stop offset="1" stopColor="#4A6CF7" stopOpacity="0" />
-            </linearGradient>
-            <radialGradient
-              id="heroGradientB"
-              cx="0"
-              cy="0"
-              r="1"
-              gradientUnits="userSpaceOnUse"
-              gradientTransform="translate(17.9997 182) rotate(90) scale(18)"
-            >
-              <stop offset="0.145833" stopColor="#4A6CF7" stopOpacity="0" />
-              <stop offset="1" stopColor="#4A6CF7" stopOpacity="0.14" />
-            </radialGradient>
-            <radialGradient
-              id="heroGradientC"
-              cx="0"
-              cy="0"
-              r="1"
-              gradientUnits="userSpaceOnUse"
-              gradientTransform="translate(76.9997 288) rotate(90) scale(34)"
-            >
-              <stop offset="0.145833" stopColor="#4A6CF7" stopOpacity="0" />
-              <stop offset="1" stopColor="#4A6CF7" stopOpacity="0.14" />
-            </radialGradient>
-            <linearGradient
-              id="heroGradientD"
-              x1="226.775"
-              y1="-66.1548"
-              x2="292.157"
-              y2="351.421"
-              gradientUnits="userSpaceOnUse"
-            >
-              <stop stopColor="#4A6CF7" />
-              <stop offset="1" stopColor="#4A6CF7" stopOpacity="0" />
-            </linearGradient>
-          </defs>
-        </svg>
-      </div>
-      <div className="pointer-events-none absolute bottom-0 left-0 z-[-1] opacity-60 dark:opacity-70">
-        <svg
-          width="364"
-          height="201"
-          viewBox="0 0 364 201"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            d="M5.88928 72.3303C33.6599 66.4798 101.397 64.9086 150.178 105.427C211.155 156.076 229.59 162.093 264.333 166.607C299.076 171.12 337.718 183.657 362.889 212.24"
-            stroke="url(#heroLineA)"
-          />
-          <path
-            d="M-22.1107 72.3303C5.65989 66.4798 73.3965 64.9086 122.178 105.427C183.155 156.076 201.59 162.093 236.333 166.607C271.076 171.12 309.718 183.657 334.889 212.24"
-            stroke="url(#heroLineB)"
-          />
-          <circle cx="220" cy="63" r="43" fill="url(#heroLineC)" />
-          <defs>
-            <linearGradient
-              id="heroLineA"
-              x1="184.389"
-              y1="69.2405"
-              x2="184.389"
-              y2="212.24"
-              gradientUnits="userSpaceOnUse"
-            >
-              <stop stopColor="#4A6CF7" stopOpacity="0" />
-              <stop offset="1" stopColor="#4A6CF7" />
-            </linearGradient>
-            <linearGradient
-              id="heroLineB"
-              x1="156.389"
-              y1="69.2405"
-              x2="156.389"
-              y2="212.24"
-              gradientUnits="userSpaceOnUse"
-            >
-              <stop stopColor="#4A6CF7" stopOpacity="0" />
-              <stop offset="1" stopColor="#4A6CF7" />
-            </linearGradient>
-            <radialGradient
-              id="heroLineC"
-              cx="0"
-              cy="0"
-              r="1"
-              gradientUnits="userSpaceOnUse"
-              gradientTransform="translate(220 63) rotate(90) scale(43)"
-            >
-              <stop offset="0.145833" stopColor="#4A6CF7" stopOpacity="0" />
-              <stop offset="1" stopColor="#4A6CF7" stopOpacity="0.14" />
-            </radialGradient>
-          </defs>
-        </svg>
-      </div>
-    </>
+    <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[var(--accent-glow)] text-[var(--accent)]">
+      {children}
+    </div>
+  );
+}
+
+function MusicIcon() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-5 w-5 fill-none stroke-current" strokeWidth="1.8">
+      <circle cx="8" cy="18" r="4" />
+      <path d="M12 18V2l7 4" />
+    </svg>
+  );
+}
+
+function UploadIcon() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-6 w-6 fill-none stroke-current" strokeWidth="1.8">
+      <path d="M12 16V5" />
+      <path d="m7 10 5-5 5 5" />
+      <path d="M5 19h14" />
+    </svg>
+  );
+}
+
+function BoltIcon() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-5 w-5 fill-none stroke-current" strokeWidth="1.8">
+      <path d="M13 2 4 14h6l-1 8 9-12h-6l1-8Z" />
+    </svg>
+  );
+}
+
+function CoverIcon() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-5 w-5 fill-none stroke-current" strokeWidth="1.8">
+      <rect x="3" y="4" width="18" height="16" rx="3" />
+      <circle cx="9" cy="10" r="2" />
+      <path d="m21 16-5-5-7 7" />
+    </svg>
+  );
+}
+
+function TagsIcon() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-5 w-5 fill-none stroke-current" strokeWidth="1.8">
+      <path d="M20 10 10 20 3 13V4h9l8 6Z" />
+      <circle cx="7.5" cy="8.5" r="1" />
+    </svg>
+  );
+}
+
+function DownloadIcon() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-5 w-5 fill-none stroke-current" strokeWidth="1.8">
+      <path d="M12 4v10" />
+      <path d="m7 10 5 5 5-5" />
+      <path d="M5 20h14" />
+    </svg>
+  );
+}
+
+function FileIcon() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-5 w-5 fill-none stroke-current" strokeWidth="1.8">
+      <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8Z" />
+      <path d="M14 3v5h5" />
+    </svg>
+  );
+}
+
+function CheckIcon() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-5 w-5 fill-none stroke-current" strokeWidth="1.8">
+      <path d="m5 13 4 4L19 7" />
+    </svg>
+  );
+}
+
+function AlertIcon() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-5 w-5 fill-none stroke-current" strokeWidth="1.8">
+      <path d="M12 9v4" />
+      <path d="M12 17h.01" />
+      <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.72 3h16.92a2 2 0 0 0 1.72-3L13.71 3.86a2 2 0 0 0-3.42 0Z" />
+    </svg>
+  );
+}
+
+function SparklesIcon() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-3.5 w-3.5 fill-none stroke-current" strokeWidth="2">
+      <path d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z" />
+      <path d="M20 2v4" />
+      <path d="M22 4h-4" />
+      <circle cx="4" cy="20" r="2" />
+    </svg>
+  );
+}
+
+function FeatureIcon({ index }: { index: number }) {
+  if (index === 0) {
+    return <BoltIcon />;
+  }
+
+  if (index === 1) {
+    return <TagsIcon />;
+  }
+
+  return <CoverIcon />;
+}
+
+function SectionCard({
+  children,
+  className = "",
+}: {
+  children: ReactNode;
+  className?: string;
+}) {
+  return (
+    <div
+      className={`border border-[var(--border)] bg-[var(--surface)]/92 p-6 shadow-[0_24px_60px_var(--accent-glow)] backdrop-blur-xl md:p-7 ${className}`}
+    >
+      {children}
+    </div>
   );
 }
 
@@ -380,9 +385,7 @@ export default function Home() {
     }
   };
 
-  const handleFieldChange = (
-    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-  ) => {
+  const handleFieldChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
     setForm((current) => ({
       ...current,
@@ -610,7 +613,7 @@ export default function Home() {
   };
 
   return (
-    <main className="overflow-hidden">
+    <main className="relative min-h-screen overflow-hidden bg-[radial-gradient(circle_at_top,var(--accent-glow),transparent_30%),var(--background)]">
       <input
         ref={mp3InputRef}
         type="file"
@@ -626,283 +629,406 @@ export default function Home() {
         onChange={handleCoverSelect}
       />
 
-      <section className="relative z-10 overflow-hidden pb-18 pt-6 md:pb-24 md:pt-8 xl:pb-28">
-        <HeroShapes />
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-[320px] bg-[radial-gradient(circle_at_top,var(--accent-glow),transparent_60%)]" />
+      <div className="pointer-events-none absolute left-[12%] top-28 h-32 w-32 rounded-full bg-[var(--accent-glow)] blur-3xl" />
+      <div className="pointer-events-none absolute right-[10%] top-44 h-40 w-40 rounded-full bg-[color:rgba(124,240,223,0.05)] blur-3xl" />
 
-        <div className="container-shell">
-          <div className="flex items-center justify-between gap-4">
+      <header className="sticky top-0 z-40 border-b border-[var(--border)] bg-[color:rgba(2,3,3,0.96)] backdrop-blur-xl">
+        <div className="container-shell flex h-[76px] items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <div className="flex h-14 w-14 items-center justify-center rounded-[18px] bg-[linear-gradient(180deg,var(--accent),var(--accent-strong))] text-[#03211a] shadow-[0_10px_24px_var(--accent-glow)]">
+              <MusicIcon />
+            </div>
             <div>
+              <p className="text-lg font-semibold tracking-[-0.03em] text-[var(--foreground)] md:text-[1.7rem] md:leading-none">
+                {headerTitle}
+              </p>
+              <p className="mt-1 text-[0.82rem] text-[var(--muted)] md:text-sm">{headerSubtitle}</p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <span className="hidden items-center gap-1.5 rounded-full border border-[color:rgba(45,212,191,0.14)] bg-[color:rgba(45,212,191,0.08)] px-3.5 py-1.5 text-xs font-medium text-[var(--accent)] sm:inline-flex">
+              <SparklesIcon />
+              {copy.header.badge}
+            </span>
+            <ThemeToggle label={copy.actions.toggleTheme} />
+          </div>
+        </div>
+      </header>
+
+      <section className="relative py-8 md:py-10">
+        <div className="container-shell">
+          {!hasLoadedFile ? (
+            <div className="mx-auto text-center">
               <p className="text-sm font-medium uppercase tracking-[0.28em] text-[var(--muted)]">
                 {copy.header.eyebrow}
               </p>
-            </div>
-            <ThemeToggle label={copy.actions.toggleTheme} />
-          </div>
-
-          <div className="mx-auto mt-12 max-w-[920px] text-center md:mt-16">
-            <h1 className="text-4xl font-bold leading-tight text-[var(--foreground)] md:text-6xl md:leading-tight xl:text-7xl xl:leading-tight">
-              {copy.hero.title}
-            </h1>
-            <p className="mx-auto mt-6 max-w-[760px] text-base leading-8 text-[var(--muted)] md:text-lg">
-              {copy.hero.description}
-            </p>
-          </div>
-
-          <div className="mx-auto mt-10 max-w-[980px]">
-            <button
-              type="button"
-              onClick={() => mp3InputRef.current?.click()}
-              onDragOver={handleDragOver}
-              onDragLeave={handleDragLeave}
-              onDrop={handleDrop}
-              className={`group relative flex min-h-[340px] w-full flex-col items-center justify-center overflow-hidden rounded-[28px] border border-dashed px-8 py-12 text-center transition duration-300 ${
-                isDragging
-                  ? "border-[var(--accent)] bg-[color:rgba(74,108,247,0.08)]"
-                  : "border-[var(--border)] bg-[var(--surface)] shadow-[0_20px_60px_rgba(13,24,45,0.08)] dark:shadow-none"
-              }`}
-            >
-              <div className="absolute inset-0 opacity-40">
-                <div className="absolute left-10 top-10 h-32 w-32 rounded-full bg-[color:rgba(74,108,247,0.1)] blur-3xl" />
-                <div className="absolute bottom-6 right-10 h-32 w-32 rounded-full bg-[color:rgba(74,108,247,0.1)] blur-3xl" />
-              </div>
-
-              <div className="relative z-10 flex h-24 w-24 items-center justify-center rounded-full border border-[var(--border)] bg-white text-xl font-semibold text-[var(--accent)] shadow-[0_10px_30px_rgba(74,108,247,0.12)] dark:bg-slate-900 dark:shadow-none">
-                MP3
-              </div>
-              <h2 className="relative z-10 mt-8 text-3xl font-semibold md:text-4xl">
-                {isReading ? copy.hero.dropzoneReading : copy.hero.dropzoneIdle}
-              </h2>
-              <p className="relative z-10 mt-4 max-w-[680px] text-base leading-7 text-[var(--muted)] md:text-lg">
-                {copy.hero.dropzoneDescription}
+              <h1 className="mt-5 text-3xl font-bold leading-[1.1] text-[var(--foreground)] md:text-4xl">
+                {copy.hero.title}
+              </h1>
+              <p className="mx-auto mt-5 max-w-2xl text-base leading-8 text-[var(--muted)] md:text-lg">
+                {copy.hero.description}
               </p>
-              <span className="relative z-10 mt-8 inline-flex rounded-sm bg-[var(--accent)] px-8 py-4 text-base font-semibold text-white transition duration-300 group-hover:bg-[var(--accent-strong)]">
-                {copy.actions.selectMp3}
-              </span>
+            </div>
+          ) : null}
 
-              {mp3File || readProgress.phase !== "idle" ? (
-                <div className="relative z-10 mt-8 w-full max-w-[620px] rounded-[22px] border border-[var(--border)] bg-[var(--surface)]/90 px-5 py-4 text-left backdrop-blur">
-                  <div className="flex items-center justify-between gap-4">
-                    <p className="text-xs uppercase tracking-[0.22em] text-[var(--muted)]">
-                      {copy.progress.uploadPanelTitle}
-                    </p>
-                    <p className="text-sm font-medium text-[var(--foreground)]">
-                      {readProgress.percent === null
-                        ? copy.progress.unknownPercent
-                        : formatMessage(copy.progress.percent, {
-                            value: Math.round(readProgress.percent),
-                          })}
-                    </p>
+          <div className={`mx-auto ${hasLoadedFile ? "mt-0" : "mt-10"} space-y-6`}>
+            {!hasLoadedFile ? (
+              <SectionCard className="overflow-hidden p-0">
+                <button
+                  type="button"
+                  onClick={() => mp3InputRef.current?.click()}
+                  onDragOver={handleDragOver}
+                  onDragLeave={handleDragLeave}
+                  onDrop={handleDrop}
+                  className={`group relative flex min-h-[400px] w-full flex-col items-center justify-center overflow-hidden px-8 py-5 text-center transition ${
+                    isDragging
+                      ? "bg-[var(--accent-glow)]"
+                      : "bg-transparent hover:bg-[color:rgba(32,201,151,0.04)]"
+                  }`}
+                >
+                  <div className="absolute inset-0 opacity-50">
+                    <div className="absolute left-16 top-10 h-36 w-36 rounded-full bg-[var(--accent-glow)] blur-3xl" />
+                    <div className="absolute bottom-8 right-16 h-36 w-36 rounded-full bg-[color:rgba(124,240,223,0.10)] blur-3xl" />
                   </div>
-                  <p className="mt-2 text-sm font-medium text-[var(--foreground)]">
-                    {getReadProgressLabel(readProgress)}
+
+                  <div className="relative z-10 flex h-24 w-24 items-center justify-center rounded-[28px] border border-[var(--border)] bg-[var(--surface-soft)] text-[var(--accent)] shadow-[0_16px_40px_var(--accent-glow)]">
+                    <UploadIcon />
+                  </div>
+                  <h2 className="relative z-10 mt-8 text-3xl font-semibold tracking-[-0.03em] text-[var(--foreground)] md:text-3xl">
+                    {isReading ? copy.hero.dropzoneReading : copy.hero.dropzoneIdle}
+                  </h2>
+                  <p className="relative z-10 mt-4 max-w-2xl text-base leading-8 text-[var(--muted)] md:text-lg">
+                    {copy.hero.dropzoneDescription}
                   </p>
-                  <ProgressBar progress={readProgress} />
-                  <div className="mt-3 flex flex-wrap gap-x-6 gap-y-2 text-sm text-[var(--muted)]">
-                    {mp3File ? (
-                      <span>
-                        {copy.progress.selectedFile}: {mp3File.name}
-                      </span>
-                    ) : null}
-                    {mp3File ? (
-                      <span>
-                        {copy.progress.fileSize}: {formatBytes(mp3File.size)}
-                      </span>
-                    ) : null}
+                  <span className="relative z-10 mt-8 inline-flex items-center gap-2 rounded-2xl bg-[var(--accent)] px-6 py-3.5 text-sm font-semibold text-[#06231b] shadow-[0_14px_30px_var(--accent-glow)] transition group-hover:translate-y-[-1px] group-hover:bg-[var(--accent-strong)]">
+                    <MusicIcon />
+                    {copy.actions.selectMp3}
+                  </span>
+                  <span className="relative z-10 mt-5 rounded-full border border-[var(--border)] bg-[var(--surface-soft)] px-4 py-2 text-xs text-[var(--muted)]">
+                    {copy.hero.dropzoneSupport}
+                  </span>
+
+                  {mp3File || readProgress.phase !== "idle" ? (
+                    <div className="relative z-10 mt-8 w-full max-w-[660px] rounded-[26px] border border-[var(--border)] bg-[var(--surface)]/84 px-5 py-5 text-left backdrop-blur-xl">
+                      <div className="flex items-center justify-between gap-4">
+                        <p className="text-xs uppercase tracking-[0.22em] text-[var(--muted)]">
+                          {copy.progress.uploadPanelTitle}
+                        </p>
+                        <p className="text-sm font-semibold text-[var(--foreground)]">
+                          {readProgress.percent === null
+                            ? copy.progress.unknownPercent
+                            : formatMessage(copy.progress.percent, {
+                                value: Math.round(readProgress.percent),
+                              })}
+                        </p>
+                      </div>
+                      <p className="mt-2 text-sm font-medium text-[var(--foreground)]">
+                        {getReadProgressLabel(readProgress)}
+                      </p>
+                      <ProgressBar progress={readProgress} />
+                      <div className="mt-3 flex flex-wrap gap-x-5 gap-y-2 text-sm text-[var(--muted)]">
+                        {mp3File ? (
+                          <span>
+                            {copy.progress.selectedFile}: {mp3File.name}
+                          </span>
+                        ) : null}
+                        {mp3File ? (
+                          <span>
+                            {copy.progress.fileSize}: {formatBytes(mp3File.size)}
+                          </span>
+                        ) : null}
+                      </div>
+                    </div>
+                  ) : null}
+                </button>
+              </SectionCard>
+            ) : (
+              <SectionCard>
+                <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+                  <div className="flex items-center gap-4">
+                    <IconWrap>
+                      <FileIcon />
+                    </IconWrap>
+                    <div className="min-w-0">
+                      <p className="text-xs uppercase tracking-[0.24em] text-[var(--muted)]">
+                        {copy.file.readyTitle}
+                      </p>
+                      <h2 className="mt-1 truncate text-2xl font-semibold tracking-[-0.02em] text-[var(--foreground)]">
+                        {mp3File?.name}
+                      </h2>
+                      <p className="mt-1 text-sm text-[var(--muted)]">{copy.file.readyDescription}</p>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-wrap items-center gap-3 lg:justify-end">
+                    <span className="rounded-full border border-[var(--border)] bg-[var(--surface-soft)] px-4 py-2 text-sm text-[var(--muted)]">
+                      {copy.file.size}: {formatBytes(mp3File?.size ?? null)}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => mp3InputRef.current?.click()}
+                      className="inline-flex items-center gap-2 rounded-2xl border border-[var(--border)] bg-[var(--surface-soft)] px-5 py-3 text-sm font-medium text-[var(--foreground)] transition hover:border-[var(--accent)] hover:text-[var(--accent)]"
+                    >
+                      <UploadIcon />
+                      {copy.actions.changeMp3}
+                    </button>
                   </div>
                 </div>
-              ) : null}
-            </button>
+              </SectionCard>
+            )}
 
-            <div className="mx-auto mt-8 max-w-[800px] text-center">
-              <p className="text-sm leading-7 text-[var(--muted)] md:text-base">
-                {copy.hero.steps.map((step, index) => (
-                  <span key={step}>
-                    {index + 1}. {step}
-                    {index < copy.hero.steps.length - 1 ? <br /> : null}
-                  </span>
+            {!hasLoadedFile ? (
+              <div className="grid gap-4 md:grid-cols-3">
+                {copy.features.items.map((feature, index) => (
+                  <SectionCard key={feature.title} className="p-5">
+                    <div className="flex items-start gap-4">
+                      <IconWrap>
+                        <FeatureIcon index={index} />
+                      </IconWrap>
+                      <div>
+                        <h3 className="text-lg font-semibold tracking-[-0.02em] text-[var(--foreground)]">
+                          {feature.title}
+                        </h3>
+                        <p className="mt-1 text-sm leading-6 text-[var(--muted)]">
+                          {feature.description}
+                        </p>
+                      </div>
+                    </div>
+                  </SectionCard>
                 ))}
-              </p>
+              </div>
+            ) : null}
+
+            <div className={`grid gap-4 ${hasLoadedFile ? "lg:grid-cols-[1.2fr_0.8fr]" : "md:grid-cols-[1.2fr_0.8fr]"}`}>
+              <SectionCard className="p-5">
+                <div className="flex items-start gap-4">
+                  <div
+                    className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl ${
+                      error
+                        ? "bg-[color:rgba(214,69,69,0.12)] text-[var(--danger)]"
+                        : "bg-[var(--accent-glow)] text-[var(--accent)]"
+                    }`}
+                  >
+                    {error ? <AlertIcon /> : <CheckIcon />}
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-xs uppercase tracking-[0.22em] text-[var(--muted)]">
+                      {copy.status.panelTitle}
+                    </p>
+                    <p className="mt-2 text-base font-medium leading-7 text-[var(--foreground)]">
+                      {status}
+                    </p>
+                    {mp3File ? (
+                      <p className="mt-2 text-sm text-[var(--muted)]">
+                        {formatMessage(copy.status.currentFile, { filename: mp3File.name })}
+                      </p>
+                    ) : null}
+                    {error ? <p className="mt-3 text-sm text-[var(--danger)]">{error}</p> : null}
+                  </div>
+                </div>
+              </SectionCard>
+
+              <SectionCard className="p-5">
+                <div className="flex items-start gap-4">
+                  <div
+                    className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl ${
+                      warnings.length > 0
+                        ? "bg-[color:rgba(251,113,133,0.14)] text-[var(--danger)]"
+                        : "bg-[color:rgba(32,201,151,0.12)] text-[var(--success)]"
+                    }`}
+                  >
+                    {warnings.length > 0 ? <AlertIcon /> : <CheckIcon />}
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-xs uppercase tracking-[0.22em] text-[var(--muted)]">
+                      {copy.warnings.panelTitle}
+                    </p>
+                    {warnings.length > 0 ? (
+                      <div className="mt-3 space-y-2">
+                        {warnings.map((warning) => (
+                          <p key={warning} className="text-sm text-[var(--muted)]">
+                            {warning}
+                          </p>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="mt-3 text-sm text-[var(--muted)]">{copy.warnings.empty}</p>
+                    )}
+                  </div>
+                </div>
+              </SectionCard>
             </div>
 
-            <div className="mx-auto mt-8 grid max-w-[980px] gap-4 md:grid-cols-[1.2fr_0.8fr]">
-              <div className="rounded-[22px] border border-[var(--border)] bg-[var(--surface)] px-5 py-4">
-                <p className="text-xs uppercase tracking-[0.22em] text-[var(--muted)]">
-                  {copy.status.panelTitle}
-                </p>
-                <p className="mt-2 text-base font-medium">{status}</p>
-                {mp3File ? (
-                  <p className="mt-2 text-sm text-[var(--muted)]">
-                    {formatMessage(copy.status.currentFile, { filename: mp3File.name })}
-                  </p>
-                ) : null}
-                {error ? <p className="mt-3 text-sm text-[var(--danger)]">{error}</p> : null}
-              </div>
-              <div className="rounded-[22px] border border-[var(--border)] bg-[var(--surface)] px-5 py-4">
-                <p className="text-xs uppercase tracking-[0.22em] text-[var(--muted)]">
-                  {copy.warnings.panelTitle}
-                </p>
-                {warnings.length > 0 ? (
-                  <div className="mt-2 space-y-2">
-                    {warnings.map((warning) => (
-                      <p key={warning} className="text-sm text-[var(--muted)]">
-                        {warning}
-                      </p>
-                    ))}
+            {hasLoadedFile ? (
+              <div className="space-y-6">
+                <SectionCard>
+                  <div className="flex items-center gap-3">
+                    <IconWrap>
+                      <CoverIcon />
+                    </IconWrap>
+                    <p className="text-xs uppercase tracking-[0.22em] text-[var(--muted)]">
+                      {copy.cover.panelTitle}
+                    </p>
                   </div>
-                ) : (
-                  <p className="mt-2 text-sm text-[var(--muted)]">{copy.warnings.empty}</p>
-                )}
+
+                  <div className="mt-6 grid gap-6 lg:grid-cols-[360px_minmax(0,1fr)]">
+                    <div className="flex aspect-square max-w-[360px] items-center justify-center overflow-hidden rounded-[28px] border border-[var(--border)] bg-[var(--surface-soft)] shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]">
+                      {previewUrl ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={previewUrl}
+                          alt={copy.cover.previewAlt}
+                          className="h-full w-full object-cover"
+                        />
+                      ) : (
+                        <div className="px-8 text-center text-sm leading-6 text-[var(--muted)]">
+                          {copy.cover.empty}
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="flex flex-col gap-4 lg:pt-3">
+                      <div className="flex flex-wrap gap-3">
+                        <button
+                          type="button"
+                          onClick={() => coverInputRef.current?.click()}
+                          className="inline-flex items-center gap-2 rounded-2xl border border-[var(--border)] bg-[var(--surface-soft)] px-5 py-3.5 text-sm font-medium text-[var(--foreground)] transition hover:border-[var(--accent)] hover:text-[var(--accent)]"
+                        >
+                          <CoverIcon />
+                          {copy.actions.selectCover}
+                        </button>
+                      </div>
+
+                      <div className="grid gap-3 sm:grid-cols-2">
+                        <div className="rounded-[22px] border border-[var(--border)] bg-[var(--surface-soft)] p-4">
+                          <p className="text-xs uppercase tracking-[0.2em] text-[var(--muted)]">
+                            {copy.cover.mime}
+                          </p>
+                          <p className="mt-2 text-sm text-[var(--foreground)]">
+                            {metadata?.cover_mime_type ?? coverFile?.type ?? copy.cover.none}
+                          </p>
+                        </div>
+                        <div className="rounded-[22px] border border-[var(--border)] bg-[var(--surface-soft)] p-4">
+                          <p className="text-xs uppercase tracking-[0.2em] text-[var(--muted)]">
+                            {copy.cover.newImage}
+                          </p>
+                          <p className="mt-2 text-sm text-[var(--foreground)] break-all">
+                            {coverFile?.name ?? copy.cover.notSelected}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </SectionCard>
+
+                <SectionCard>
+                  <div className="flex items-center gap-3">
+                    <IconWrap>
+                      <TagsIcon />
+                    </IconWrap>
+                    <div>
+                      <p className="text-xs uppercase tracking-[0.22em] text-[var(--muted)]">
+                        {copy.metadata.panelTitle}
+                      </p>
+                      <h2 className="mt-1 text-[2rem] font-semibold tracking-[-0.03em] text-[var(--foreground)]">
+                        {copy.metadata.title}
+                      </h2>
+                    </div>
+                  </div>
+
+                  <div className="mt-8 grid gap-4 md:grid-cols-2">
+                    {FIELD_KEYS.map((fieldKey) => (
+                      <label
+                        key={fieldKey}
+                        className="rounded-[24px] border border-[var(--border)] bg-[var(--surface-soft)] p-5"
+                      >
+                        <span className="text-sm font-medium text-[var(--muted)]">
+                          {copy.metadata.fields[fieldKey].label}
+                        </span>
+                        <input
+                          type="text"
+                          name={fieldKey}
+                          value={form[fieldKey]}
+                          onChange={handleFieldChange}
+                          placeholder={copy.metadata.fields[fieldKey].placeholder}
+                          className="mt-3 h-12 w-full rounded-2xl border border-[var(--border)] bg-[var(--surface)] px-4 text-sm text-[var(--foreground)] outline-none transition placeholder:text-[var(--muted)] focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent-glow)]"
+                        />
+                      </label>
+                    ))}
+
+                    <label className="rounded-[24px] border border-[var(--border)] bg-[var(--surface-soft)] p-5 md:col-span-2">
+                      <span className="text-sm font-medium text-[var(--muted)]">
+                        {copy.metadata.commentLabel}
+                      </span>
+                      <input
+                        type="text"
+                        name="comment"
+                        value={form.comment}
+                        onChange={handleFieldChange}
+                        placeholder={copy.metadata.commentPlaceholder}
+                        className="mt-3 h-12 w-full rounded-2xl border border-[var(--border)] bg-[var(--surface)] px-4 text-sm text-[var(--foreground)] outline-none transition placeholder:text-[var(--muted)] focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent-glow)]"
+                      />
+                    </label>
+                  </div>
+                </SectionCard>
+
+                <SectionCard className="text-center">
+                  {saveProgress.phase !== "idle" ? (
+                    <div className="mx-auto max-w-[720px]">
+                      <div className="flex items-center justify-between gap-4">
+                        <p className="text-xs uppercase tracking-[0.2em] text-[var(--muted)]">
+                          {copy.progress.savePanelTitle}
+                        </p>
+                        <p className="text-sm font-semibold text-[var(--foreground)]">
+                          {saveProgress.percent === null
+                            ? copy.progress.unknownPercent
+                            : formatMessage(copy.progress.percent, {
+                                value: Math.round(saveProgress.percent),
+                              })}
+                        </p>
+                      </div>
+                      <p className="mt-2 text-sm font-medium text-[var(--foreground)]">
+                        {getSaveProgressLabel(saveProgress)}
+                      </p>
+                      <ProgressBar progress={saveProgress} />
+                      <div className="mt-3 flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm text-[var(--muted)]">
+                        <span>
+                          {copy.progress.fileSize}: {formatBytes(mp3File?.size ?? null)}
+                        </span>
+                        {saveProgress.resultBytes ? (
+                          <span>
+                            {copy.progress.downloadSize}: {formatBytes(saveProgress.resultBytes)}
+                          </span>
+                        ) : null}
+                      </div>
+                    </div>
+                  ) : null}
+
+                  <button
+                    type="button"
+                    onClick={handleSave}
+                    disabled={isSaving}
+                    className={`mx-auto inline-flex items-center gap-2 rounded-2xl bg-[linear-gradient(135deg,var(--accent),#7cf0df)] px-6 py-3.5 text-sm font-semibold text-[#06231b] shadow-[0_16px_32px_var(--accent-glow)] transition hover:translate-y-[-1px] hover:shadow-[0_20px_36px_var(--accent-glow)] disabled:cursor-not-allowed disabled:opacity-60 ${
+                      saveProgress.phase !== "idle" ? "mt-5" : ""
+                    }`}
+                  >
+                    <DownloadIcon />
+                    {isSaving ? copy.actions.saving : copy.actions.save}
+                  </button>
+                </SectionCard>
               </div>
-            </div>
+            ) : null}
           </div>
         </div>
       </section>
 
-      {hasLoadedFile ? (
-        <section className="pb-14 md:pb-20">
-          <div className="container-shell">
-            <div className="space-y-6">
-              <div className="rounded-[28px] border border-[var(--border)] bg-[var(--surface)] p-6 shadow-[0_18px_40px_rgba(13,24,45,0.05)] dark:shadow-none">
-                <p className="text-sm uppercase tracking-[0.24em] text-[var(--muted)]">
-                  {copy.cover.panelTitle}
-                </p>
-
-                <div className="mt-5 grid gap-5 lg:grid-cols-[320px_minmax(0,1fr)] lg:items-start">
-                  <div className="flex aspect-square max-w-[320px] items-center justify-center overflow-hidden rounded-[24px] border border-[var(--border)] bg-[var(--surface-soft)]">
-                    {previewUrl ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img
-                        src={previewUrl}
-                        alt={copy.cover.previewAlt}
-                        className="h-full w-full object-cover"
-                      />
-                    ) : (
-                      <div className="px-8 text-center text-sm leading-6 text-[var(--muted)]">
-                        {copy.cover.empty}
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="flex min-h-full flex-col justify-start">
-                    <div className="flex flex-wrap gap-3">
-                      <button
-                        type="button"
-                        onClick={() => coverInputRef.current?.click()}
-                        className="rounded-sm border border-[var(--border)] px-5 py-3 text-sm font-medium transition hover:border-[var(--accent)] hover:text-[var(--accent)]"
-                      >
-                        {copy.actions.selectCover}
-                      </button>
-                    </div>
-
-                    <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                      <div className="rounded-[18px] border border-[var(--border)] bg-[var(--surface-soft)] p-4">
-                        <p className="text-xs uppercase tracking-[0.2em] text-[var(--muted)]">
-                          {copy.cover.mime}
-                        </p>
-                        <p className="mt-2 text-sm">
-                          {metadata?.cover_mime_type ?? coverFile?.type ?? copy.cover.none}
-                        </p>
-                      </div>
-                      <div className="rounded-[18px] border border-[var(--border)] bg-[var(--surface-soft)] p-4">
-                        <p className="text-xs uppercase tracking-[0.2em] text-[var(--muted)]">
-                          {copy.cover.newImage}
-                        </p>
-                        <p className="mt-2 text-sm break-all">
-                          {coverFile?.name ?? copy.cover.notSelected}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="rounded-[28px] border border-[var(--border)] bg-[var(--surface)] p-6 shadow-[0_18px_40px_rgba(13,24,45,0.05)] dark:shadow-none">
-                <p className="text-sm uppercase tracking-[0.24em] text-[var(--muted)]">
-                  {copy.metadata.panelTitle}
-                </p>
-                <h2 className="mt-3 text-3xl font-semibold">{copy.metadata.title}</h2>
-
-                <div className="mt-8 grid gap-4 md:grid-cols-2">
-                  {FIELD_KEYS.map((fieldKey) => (
-                    <label
-                      key={fieldKey}
-                      className="rounded-[20px] border border-[var(--border)] bg-[var(--surface-soft)] p-4"
-                    >
-                      <span className="text-sm font-medium text-[var(--muted)]">
-                        {copy.metadata.fields[fieldKey].label}
-                      </span>
-                      <input
-                        type="text"
-                        name={fieldKey}
-                        value={form[fieldKey]}
-                        onChange={handleFieldChange}
-                        placeholder={copy.metadata.fields[fieldKey].placeholder}
-                        className="mt-3 w-full rounded-sm border border-[var(--border)] bg-[var(--surface)] px-4 py-3 text-sm outline-none transition focus:border-[var(--accent)]"
-                      />
-                    </label>
-                  ))}
-
-                  <label className="rounded-[20px] border border-[var(--border)] bg-[var(--surface-soft)] p-4 md:col-span-2">
-                    <span className="text-sm font-medium text-[var(--muted)]">
-                      {copy.metadata.commentLabel}
-                    </span>
-                    <input
-                      type="text"
-                      name="comment"
-                      value={form.comment}
-                      onChange={handleFieldChange}
-                      placeholder={copy.metadata.commentPlaceholder}
-                      className="mt-3 w-full rounded-sm border border-[var(--border)] bg-[var(--surface)] px-4 py-3 text-sm outline-none transition focus:border-[var(--accent)]"
-                    />
-                  </label>
-                </div>
-              </div>
-
-              <div className="rounded-[28px] border border-[var(--border)] bg-[var(--surface)] px-6 py-5 text-center shadow-[0_18px_40px_rgba(13,24,45,0.05)] dark:shadow-none">
-                {saveProgress.phase !== "idle" ? (
-                  <div className="mx-auto max-w-[720px]">
-                    <div className="flex items-center justify-between gap-4">
-                      <p className="text-xs uppercase tracking-[0.2em] text-[var(--muted)]">
-                        {copy.progress.savePanelTitle}
-                      </p>
-                      <p className="text-sm font-medium text-[var(--foreground)]">
-                        {saveProgress.percent === null
-                          ? copy.progress.unknownPercent
-                          : formatMessage(copy.progress.percent, {
-                              value: Math.round(saveProgress.percent),
-                            })}
-                      </p>
-                    </div>
-                    <p className="mt-2 text-sm font-medium">{getSaveProgressLabel(saveProgress)}</p>
-                    <ProgressBar progress={saveProgress} />
-                    <div className="mt-3 flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm text-[var(--muted)]">
-                      <span>
-                        {copy.progress.fileSize}: {formatBytes(mp3File?.size ?? null)}
-                      </span>
-                      {saveProgress.resultBytes ? (
-                        <span>
-                          {copy.progress.downloadSize}: {formatBytes(saveProgress.resultBytes)}
-                        </span>
-                      ) : null}
-                    </div>
-                  </div>
-                ) : null}
-
-                <button
-                  type="button"
-                  onClick={handleSave}
-                  disabled={isSaving}
-                  className={`mx-auto rounded-sm bg-[var(--accent)] px-6 py-3 text-sm font-medium text-white transition hover:bg-[var(--accent-strong)] disabled:cursor-not-allowed disabled:opacity-60 ${
-                    saveProgress.phase !== "idle" ? "mt-5" : "mt-0"
-                  }`}
-                >
-                  {isSaving ? copy.actions.saving : copy.actions.save}
-                </button>
-              </div>
-            </div>
-          </div>
-        </section>
-      ) : null}
+      <footer className="border-t border-[var(--border)] bg-[var(--surface)]/50 py-6">
+        <div className="container-shell">
+          <p className="text-center text-sm text-[var(--muted)]">{copy.footer.text}</p>
+        </div>
+      </footer>
     </main>
   );
 }

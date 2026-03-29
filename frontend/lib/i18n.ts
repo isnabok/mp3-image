@@ -9,7 +9,7 @@ const dictionaries = {
   ru,
 } satisfies Record<Locale, Messages>;
 
-const DEFAULT_LOCALE: Locale = "ru";
+const DEFAULT_LOCALE: Locale = "en";
 
 function isLocale(value: string): value is Locale {
   return value === "en" || value === "ru";

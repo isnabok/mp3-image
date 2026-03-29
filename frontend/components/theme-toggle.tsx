@@ -17,11 +17,11 @@ function applyTheme(theme: ThemeMode) {
 export function ThemeToggle({ label = "Toggle theme" }: ThemeToggleProps) {
   const [theme, setTheme] = useState<ThemeMode>(() => {
     if (typeof window === "undefined") {
-      return "light";
+      return "dark";
     }
 
     const savedTheme = window.localStorage.getItem(STORAGE_KEY);
-    return savedTheme === "dark" ? "dark" : "light";
+    return savedTheme === "light" ? "light" : "dark";
   });
 
   useEffect(() => {
@@ -41,7 +41,7 @@ export function ThemeToggle({ label = "Toggle theme" }: ThemeToggleProps) {
       aria-label={label}
       title={label}
       onClick={handleToggle}
-      className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-black/10 bg-white text-slate-900 shadow-[0_10px_30px_rgba(18,23,35,0.08)] transition hover:-translate-y-0.5 hover:shadow-[0_14px_36px_rgba(18,23,35,0.12)] dark:border-white/10 dark:bg-slate-900 dark:text-white dark:shadow-none"
+      className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)] shadow-[0_12px_28px_var(--accent-glow)] transition hover:-translate-y-0.5 hover:border-[var(--accent)] hover:text-[var(--accent)] dark:shadow-none"
     >
       <svg
         viewBox="0 0 25 24"
