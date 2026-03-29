@@ -312,6 +312,15 @@ function AlertIcon() {
   );
 }
 
+function CloseIcon() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-5 w-5 fill-none stroke-current" strokeWidth="1.8">
+      <path d="M6 6 18 18" strokeLinecap="round" />
+      <path d="M18 6 6 18" strokeLinecap="round" />
+    </svg>
+  );
+}
+
 function SparklesIcon() {
   return (
     <svg viewBox="0 0 24 24" className="h-3.5 w-3.5 fill-none stroke-current" strokeWidth="2">
@@ -379,6 +388,22 @@ export default function Home() {
 
   const previewUrl = localCoverPreviewUrl ?? metadata?.cover_data_url ?? null;
   const hasLoadedFile = Boolean(mp3File && metadata);
+
+  const resetEditor = () => {
+    setMp3File(null);
+    setCoverFile(null);
+    setMetadata(null);
+    setWarnings([]);
+    setForm(EMPTY_FORM);
+    setError("");
+    setStatus(copy.status.idle);
+    setIsDragging(false);
+    setIsReading(false);
+    setIsSaving(false);
+    setReadProgress(EMPTY_PROGRESS);
+    setSaveProgress(EMPTY_PROGRESS);
+    resetCoverPreview();
+  };
 
   const resetCoverPreview = () => {
     if (localCoverPreviewUrl) {
@@ -757,7 +782,7 @@ export default function Home() {
                       <p className="text-xs uppercase tracking-[0.24em] text-[var(--muted)]">
                         {copy.file.readyTitle}
                       </p>
-                      <h2 className="mt-1 truncate text-[1.35rem] font-semibold tracking-[-0.02em] text-[var(--foreground)] md:text-[1.55rem]">
+                      <h2 className="mt-1 truncate text-[1.12rem] font-semibold tracking-[-0.02em] text-[var(--foreground)] md:text-[1.28rem]">
                         {mp3File?.name}
                       </h2>
                       <p className="mt-1 text-sm text-[var(--muted)]">{copy.file.readyDescription}</p>
@@ -775,6 +800,14 @@ export default function Home() {
                     >
                       <UploadIcon />
                       {copy.actions.changeMp3}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={resetEditor}
+                      className="inline-flex items-center gap-2 rounded-2xl border border-[var(--border)] bg-[var(--surface-soft)] px-5 py-3 text-sm font-medium text-[var(--foreground)] transition hover:border-[var(--danger)] hover:text-[var(--danger)]"
+                    >
+                      <CloseIcon />
+                      {copy.actions.removeMp3}
                     </button>
                   </div>
                 </div>

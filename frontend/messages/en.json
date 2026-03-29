@@ -13,6 +13,7 @@
   "actions": {
     "selectMp3": "Choose MP3",
     "changeMp3": "Choose another MP3",
+    "removeMp3": "Remove file",
     "selectCover": "Choose new cover",
     "save": "Save and download",
     "saving": "Saving...",
