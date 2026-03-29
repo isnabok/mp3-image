@@ -208,20 +208,22 @@ function ProgressBar({ progress }: { progress: OperationProgress }) {
   const width = progress.percent === null ? "45%" : `${progress.percent}%`;
 
   return (
-    <div className="mt-3 h-2 overflow-hidden rounded-full bg-white/8">
+    <div className="mt-3 h-2.5 overflow-hidden rounded-full bg-[var(--surface-soft)]">
       <div
-        className={`h-full rounded-full bg-[linear-gradient(90deg,var(--accent),#7cf0df)] transition-all duration-300 ${
+        className={`relative h-full rounded-full bg-[linear-gradient(90deg,var(--accent),var(--accent-strong))] transition-all duration-300 ${
           progress.percent === null ? "animate-pulse" : ""
         }`}
         style={{ width }}
-      />
+      >
+        <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.24),transparent)] opacity-70" />
+      </div>
     </div>
   );
 }
 
 function IconWrap({ children }: { children: ReactNode }) {
   return (
-    <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[var(--accent-glow)] text-[var(--accent)]">
+    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--accent-glow)] text-[var(--accent)]">
       {children}
     </div>
   );
@@ -238,10 +240,10 @@ function MusicIcon() {
 
 function UploadIcon() {
   return (
-    <svg viewBox="0 0 24 24" className="h-6 w-6 fill-none stroke-current" strokeWidth="1.8">
-      <path d="M12 16V5" />
-      <path d="m7 10 5-5 5 5" />
-      <path d="M5 19h14" />
+    <svg viewBox="0 0 24 24" className="h-8 w-8 fill-none stroke-current" strokeWidth="1.9">
+      <path d="M12 15V4.5" strokeLinecap="round" />
+      <path d="m7.5 9 4.5-4.5L16.5 9" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M6 17.5v1a1.5 1.5 0 0 0 1.5 1.5h9a1.5 1.5 0 0 0 1.5-1.5v-1" strokeLinecap="round" />
     </svg>
   );
 }
@@ -342,7 +344,7 @@ function SectionCard({
 }) {
   return (
     <div
-      className={`border border-[var(--border)] bg-[var(--surface)]/92 p-6 shadow-[0_24px_60px_var(--accent-glow)] backdrop-blur-xl md:p-7 ${className}`}
+      className={`rounded-[28px] border border-[var(--border)] bg-[var(--surface)] p-6 shadow-[0_20px_48px_var(--surface-shadow)] backdrop-blur-xl md:p-7 ${className}`}
     >
       {children}
     </div>
@@ -613,7 +615,7 @@ export default function Home() {
   };
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-[radial-gradient(circle_at_top,var(--accent-glow),transparent_30%),var(--background)]">
+    <main className="relative min-h-screen overflow-hidden bg-[radial-gradient(circle_at_top,var(--hero-orb),transparent_30%),var(--background)]">
       <input
         ref={mp3InputRef}
         type="file"
@@ -629,26 +631,26 @@ export default function Home() {
         onChange={handleCoverSelect}
       />
 
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-[320px] bg-[radial-gradient(circle_at_top,var(--accent-glow),transparent_60%)]" />
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-[320px] bg-[radial-gradient(circle_at_top,var(--hero-orb),transparent_60%)]" />
       <div className="pointer-events-none absolute left-[12%] top-28 h-32 w-32 rounded-full bg-[var(--accent-glow)] blur-3xl" />
-      <div className="pointer-events-none absolute right-[10%] top-44 h-40 w-40 rounded-full bg-[color:rgba(124,240,223,0.05)] blur-3xl" />
+      <div className="pointer-events-none absolute right-[10%] top-44 h-40 w-40 rounded-full bg-[var(--hero-orb)] blur-3xl" />
 
-      <header className="sticky top-0 z-40 border-b border-[var(--border)] bg-[color:rgba(2,3,3,0.96)] backdrop-blur-xl">
-        <div className="container-shell flex h-[76px] items-center justify-between gap-4">
+      <header className="sticky top-0 z-40 border-b border-[var(--border)] bg-[var(--header-surface)] backdrop-blur-xl">
+        <div className="container-shell flex h-[70px] items-center justify-between gap-4">
           <div className="flex items-center gap-4">
-            <div className="flex h-14 w-14 items-center justify-center rounded-[18px] bg-[linear-gradient(180deg,var(--accent),var(--accent-strong))] text-[#03211a] shadow-[0_10px_24px_var(--accent-glow)]">
+            <div className="flex h-10 w-10 items-center justify-center rounded-[14px] bg-[linear-gradient(180deg,var(--accent),var(--accent-strong))] text-[var(--accent-contrast)] shadow-[0_10px_24px_var(--accent-glow)]">
               <MusicIcon />
             </div>
             <div>
-              <p className="text-lg font-semibold tracking-[-0.03em] text-[var(--foreground)] md:text-[1.7rem] md:leading-none">
+              <p className="text-[0.95rem] font-semibold tracking-[-0.03em] text-[var(--foreground)] md:text-[1.15rem] md:leading-none">
                 {headerTitle}
               </p>
-              <p className="mt-1 text-[0.82rem] text-[var(--muted)] md:text-sm">{headerSubtitle}</p>
+              <p className="mt-0.5 text-[0.68rem] text-[var(--muted)] md:text-[0.74rem]">{headerSubtitle}</p>
             </div>
           </div>
 
           <div className="flex items-center gap-3">
-            <span className="hidden items-center gap-1.5 rounded-full border border-[color:rgba(45,212,191,0.14)] bg-[color:rgba(45,212,191,0.08)] px-3.5 py-1.5 text-xs font-medium text-[var(--accent)] sm:inline-flex">
+            <span className="hidden items-center gap-1.5 rounded-full border border-[var(--border)] bg-[var(--surface-soft)] px-3.5 py-1.5 text-xs font-medium text-[var(--accent)] sm:inline-flex">
               <SparklesIcon />
               {copy.header.badge}
             </span>
@@ -661,13 +663,13 @@ export default function Home() {
         <div className="container-shell">
           {!hasLoadedFile ? (
             <div className="mx-auto text-center">
-              <p className="text-sm font-medium uppercase tracking-[0.28em] text-[var(--muted)]">
+              <p className="text-[11px] font-medium uppercase tracking-[0.24em] text-[var(--muted)] md:text-xs">
                 {copy.header.eyebrow}
               </p>
-              <h1 className="mt-5 text-3xl font-bold leading-[1.1] text-[var(--foreground)] md:text-4xl">
+              <h1 className="mt-4 text-[1.7rem] font-bold leading-[1.08] text-[var(--foreground)] md:text-[2rem]">
                 {copy.hero.title}
               </h1>
-              <p className="mx-auto mt-5 max-w-2xl text-base leading-8 text-[var(--muted)] md:text-lg">
+              <p className="mx-auto mt-4 max-w-2xl text-sm leading-7 text-[var(--muted)] md:text-base">
                 {copy.hero.description}
               </p>
             </div>
@@ -682,36 +684,36 @@ export default function Home() {
                   onDragOver={handleDragOver}
                   onDragLeave={handleDragLeave}
                   onDrop={handleDrop}
-                  className={`group relative flex min-h-[400px] w-full flex-col items-center justify-center overflow-hidden px-8 py-5 text-center transition ${
+                  data-dragging={isDragging}
+                  className={`upload-dropzone group relative flex min-h-[400px] w-full cursor-pointer flex-col items-center justify-center overflow-hidden rounded-[28px] border-2 border-transparent px-8 py-8 text-center transition-all duration-200 ${
                     isDragging
-                      ? "bg-[var(--accent-glow)]"
-                      : "bg-transparent hover:bg-[color:rgba(32,201,151,0.04)]"
+                      ? "scale-[1.01] bg-[var(--dropzone-hover)]"
+                      : "bg-transparent hover:bg-[var(--dropzone-hover)]"
                   }`}
                 >
                   <div className="absolute inset-0 opacity-50">
                     <div className="absolute left-16 top-10 h-36 w-36 rounded-full bg-[var(--accent-glow)] blur-3xl" />
-                    <div className="absolute bottom-8 right-16 h-36 w-36 rounded-full bg-[color:rgba(124,240,223,0.10)] blur-3xl" />
+                    <div className="absolute bottom-8 right-16 h-36 w-36 rounded-full bg-[var(--hero-orb)] blur-3xl" />
                   </div>
 
-                  <div className="relative z-10 flex h-24 w-24 items-center justify-center rounded-[28px] border border-[var(--border)] bg-[var(--surface-soft)] text-[var(--accent)] shadow-[0_16px_40px_var(--accent-glow)]">
-                    <UploadIcon />
+                  <div className="relative z-10 flex w-full max-w-3xl flex-col items-center gap-4 py-5">
+                    <div className={`flex h-20 w-20 items-center justify-center rounded-[18px] border border-[var(--border)] bg-[color:var(--accent-panel)] text-[var(--accent)] transition-transform duration-200 group-hover:scale-110 ${isDragging ? "scale-110" : ""}`}>
+                      <UploadIcon />
+                    </div>
+                    <h2 className="text-[1.45rem] font-semibold leading-tight tracking-[-0.03em] text-[var(--foreground)] md:text-[1.7rem]">
+                      {isReading ? copy.hero.dropzoneReading : copy.hero.dropzoneIdle}
+                    </h2>
+                    <p className="max-w-xl text-sm leading-7 text-[var(--muted)] md:text-base">
+                      {copy.hero.dropzoneDescription}
+                    </p>
+                    <span className="inline-flex items-center gap-2 rounded-full border border-[var(--border)] bg-[var(--surface-soft)] px-4 py-1.5 text-[11px] text-[var(--muted)]">
+                      <MusicIcon />
+                      {copy.hero.dropzoneSupport}
+                    </span>
                   </div>
-                  <h2 className="relative z-10 mt-8 text-3xl font-semibold tracking-[-0.03em] text-[var(--foreground)] md:text-3xl">
-                    {isReading ? copy.hero.dropzoneReading : copy.hero.dropzoneIdle}
-                  </h2>
-                  <p className="relative z-10 mt-4 max-w-2xl text-base leading-8 text-[var(--muted)] md:text-lg">
-                    {copy.hero.dropzoneDescription}
-                  </p>
-                  <span className="relative z-10 mt-8 inline-flex items-center gap-2 rounded-2xl bg-[var(--accent)] px-6 py-3.5 text-sm font-semibold text-[#06231b] shadow-[0_14px_30px_var(--accent-glow)] transition group-hover:translate-y-[-1px] group-hover:bg-[var(--accent-strong)]">
-                    <MusicIcon />
-                    {copy.actions.selectMp3}
-                  </span>
-                  <span className="relative z-10 mt-5 rounded-full border border-[var(--border)] bg-[var(--surface-soft)] px-4 py-2 text-xs text-[var(--muted)]">
-                    {copy.hero.dropzoneSupport}
-                  </span>
 
                   {mp3File || readProgress.phase !== "idle" ? (
-                    <div className="relative z-10 mt-8 w-full max-w-[660px] rounded-[26px] border border-[var(--border)] bg-[var(--surface)]/84 px-5 py-5 text-left backdrop-blur-xl">
+                    <div className="relative z-10 mt-5 w-full max-w-[660px] rounded-[26px] border border-[var(--border)] bg-[var(--surface-strong)] px-5 py-5 text-left backdrop-blur-xl">
                       <div className="flex items-center justify-between gap-4">
                         <p className="text-xs uppercase tracking-[0.22em] text-[var(--muted)]">
                           {copy.progress.uploadPanelTitle}
@@ -755,7 +757,7 @@ export default function Home() {
                       <p className="text-xs uppercase tracking-[0.24em] text-[var(--muted)]">
                         {copy.file.readyTitle}
                       </p>
-                      <h2 className="mt-1 truncate text-2xl font-semibold tracking-[-0.02em] text-[var(--foreground)]">
+                      <h2 className="mt-1 truncate text-[1.35rem] font-semibold tracking-[-0.02em] text-[var(--foreground)] md:text-[1.55rem]">
                         {mp3File?.name}
                       </h2>
                       <p className="mt-1 text-sm text-[var(--muted)]">{copy.file.readyDescription}</p>
@@ -769,7 +771,7 @@ export default function Home() {
                     <button
                       type="button"
                       onClick={() => mp3InputRef.current?.click()}
-                      className="inline-flex items-center gap-2 rounded-2xl border border-[var(--border)] bg-[var(--surface-soft)] px-5 py-3 text-sm font-medium text-[var(--foreground)] transition hover:border-[var(--accent)] hover:text-[var(--accent)]"
+                      className="inline-flex items-center gap-2 rounded-2xl border border-[var(--border)] bg-[var(--surface-soft)] px-5 py-3 text-sm font-medium text-[var(--foreground)] transition hover:border-[var(--accent)] hover:bg-[var(--surface-muted)] hover:text-[var(--accent)]"
                     >
                       <UploadIcon />
                       {copy.actions.changeMp3}
@@ -788,7 +790,7 @@ export default function Home() {
                         <FeatureIcon index={index} />
                       </IconWrap>
                       <div>
-                        <h3 className="text-lg font-semibold tracking-[-0.02em] text-[var(--foreground)]">
+                        <h3 className="text-base font-semibold tracking-[-0.02em] text-[var(--foreground)] md:text-[1.05rem]">
                           {feature.title}
                         </h3>
                         <p className="mt-1 text-sm leading-6 text-[var(--muted)]">
@@ -807,7 +809,7 @@ export default function Home() {
                   <div
                     className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl ${
                       error
-                        ? "bg-[color:rgba(214,69,69,0.12)] text-[var(--danger)]"
+                        ? "bg-[var(--danger-soft)] text-[var(--danger)]"
                         : "bg-[var(--accent-glow)] text-[var(--accent)]"
                     }`}
                   >
@@ -835,8 +837,8 @@ export default function Home() {
                   <div
                     className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl ${
                       warnings.length > 0
-                        ? "bg-[color:rgba(251,113,133,0.14)] text-[var(--danger)]"
-                        : "bg-[color:rgba(32,201,151,0.12)] text-[var(--success)]"
+                        ? "bg-[var(--danger-soft)] text-[var(--danger)]"
+                        : "bg-[var(--success-soft)] text-[var(--success)]"
                     }`}
                   >
                     {warnings.length > 0 ? <AlertIcon /> : <CheckIcon />}
@@ -874,7 +876,7 @@ export default function Home() {
                   </div>
 
                   <div className="mt-6 grid gap-6 lg:grid-cols-[360px_minmax(0,1fr)]">
-                    <div className="flex aspect-square max-w-[360px] items-center justify-center overflow-hidden rounded-[28px] border border-[var(--border)] bg-[var(--surface-soft)] shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]">
+                    <div className="flex aspect-square max-w-[360px] items-center justify-center overflow-hidden rounded-[28px] border border-[var(--border)] bg-[var(--surface-soft)]">
                       {previewUrl ? (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img
@@ -894,7 +896,7 @@ export default function Home() {
                         <button
                           type="button"
                           onClick={() => coverInputRef.current?.click()}
-                          className="inline-flex items-center gap-2 rounded-2xl border border-[var(--border)] bg-[var(--surface-soft)] px-5 py-3.5 text-sm font-medium text-[var(--foreground)] transition hover:border-[var(--accent)] hover:text-[var(--accent)]"
+                          className="inline-flex items-center gap-2 rounded-2xl border border-[var(--border)] bg-[var(--surface-soft)] px-5 py-3.5 text-sm font-medium text-[var(--foreground)] transition hover:border-[var(--accent)] hover:bg-[var(--surface-muted)] hover:text-[var(--accent)]"
                         >
                           <CoverIcon />
                           {copy.actions.selectCover}
@@ -932,7 +934,7 @@ export default function Home() {
                       <p className="text-xs uppercase tracking-[0.22em] text-[var(--muted)]">
                         {copy.metadata.panelTitle}
                       </p>
-                      <h2 className="mt-1 text-[2rem] font-semibold tracking-[-0.03em] text-[var(--foreground)]">
+                      <h2 className="mt-1 text-[1.55rem] font-semibold tracking-[-0.03em] text-[var(--foreground)] md:text-[1.8rem]">
                         {copy.metadata.title}
                       </h2>
                     </div>
@@ -1010,7 +1012,7 @@ export default function Home() {
                     type="button"
                     onClick={handleSave}
                     disabled={isSaving}
-                    className={`mx-auto inline-flex items-center gap-2 rounded-2xl bg-[linear-gradient(135deg,var(--accent),#7cf0df)] px-6 py-3.5 text-sm font-semibold text-[#06231b] shadow-[0_16px_32px_var(--accent-glow)] transition hover:translate-y-[-1px] hover:shadow-[0_20px_36px_var(--accent-glow)] disabled:cursor-not-allowed disabled:opacity-60 ${
+                    className={`mx-auto inline-flex items-center gap-2 rounded-2xl bg-[linear-gradient(135deg,var(--accent),var(--accent-strong))] px-6 py-3.5 text-sm font-semibold text-[var(--accent-contrast)] shadow-[0_16px_32px_var(--accent-glow)] transition hover:translate-y-[-1px] hover:shadow-[0_20px_36px_var(--accent-glow)] disabled:cursor-not-allowed disabled:opacity-60 ${
                       saveProgress.phase !== "idle" ? "mt-5" : ""
                     }`}
                   >

@@ -41,7 +41,7 @@ export function ThemeToggle({ label = "Toggle theme" }: ThemeToggleProps) {
       aria-label={label}
       title={label}
       onClick={handleToggle}
-      className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-[var(--border)] bg-[var(--surface)] text-[var(--foreground)] shadow-[0_12px_28px_var(--accent-glow)] transition hover:-translate-y-0.5 hover:border-[var(--accent)] hover:text-[var(--accent)] dark:shadow-none"
+      className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-[var(--border)] bg-[var(--surface-strong)] text-[var(--foreground)] shadow-[0_12px_28px_var(--surface-shadow)] transition hover:-translate-y-0.5 hover:border-[var(--accent)] hover:bg-[var(--surface-soft)] hover:text-[var(--accent)]"
     >
       <svg
         viewBox="0 0 25 24"

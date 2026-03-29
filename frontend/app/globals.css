@@ -2,25 +2,60 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  --background: #fdfdfd;
-  --foreground: #06080a;
-  --surface: rgba(255, 255, 255, 0.88);
-  --surface-soft: #e8f7f3;
-  --surface-muted: #def3ed;
-  --border: rgba(15, 23, 32, 0.1);
-  --accent: #20c997;
-  --accent-strong: #14b88a;
-  --muted: #667c77;
-  --success: #14b88a;
-  --danger: #d64545;
-  --accent-glow: rgba(32, 201, 151, 0.035);
-  --leading-tight: 1;
+  --background: oklch(0.985 0.004 240);
+  --foreground: oklch(0.205 0.012 258);
+  --surface: color-mix(in oklab, white 88%, transparent);
+  --surface-strong: color-mix(in oklab, white 94%, transparent);
+  --surface-soft: oklch(0.965 0.01 245);
+  --surface-muted: oklch(0.945 0.012 245);
+  --accent-panel: #d7f5f0;
+  --header-surface: color-mix(in oklab, white 90%, transparent);
+  --border: oklch(0.9 0.01 255);
+  --accent: oklch(0.72 0.19 180);
+  --accent-strong: oklch(0.66 0.2 180);
+  --accent-contrast: oklch(0.14 0.014 260);
+  --muted: oklch(0.52 0.015 255);
+  --success: oklch(0.67 0.17 165);
+  --success-soft: color-mix(in oklab, var(--success) 14%, transparent);
+  --danger: oklch(0.61 0.2 25);
+  --danger-soft: color-mix(in oklab, var(--danger) 14%, transparent);
+  --accent-glow: color-mix(in oklab, var(--accent) 18%, transparent);
+  --surface-shadow: color-mix(in oklab, var(--foreground) 10%, transparent);
+  --hero-orb: color-mix(in oklab, var(--accent) 12%, transparent);
+  --dropzone-hover: color-mix(in oklab, var(--accent) 7%, transparent);
+  --dropzone-outline-idle: oklch(0.79 0.01 255);
+  --dropzone-outline: color-mix(in oklab, var(--accent) 48%, transparent);
+}
+
+html.dark {
+  --background: oklch(0.1 0.01 260);
+  --foreground: oklch(0.95 0 0);
+  --surface: color-mix(in oklab, oklch(0.14 0.01 260) 88%, transparent);
+  --surface-strong: color-mix(in oklab, oklch(0.16 0.01 260) 92%, transparent);
+  --surface-soft: oklch(0.17 0.012 258);
+  --surface-muted: oklch(0.14 0.012 258);
+  --accent-panel: #073b39;
+  --header-surface: color-mix(in oklab, oklch(0.12 0.01 260) 92%, transparent);
+  --border: oklch(0.25 0.02 260);
+  --accent: oklch(0.72 0.19 180);
+  --accent-strong: oklch(0.77 0.16 180);
+  --accent-contrast: oklch(0.1 0.01 260);
+  --muted: oklch(0.63 0.012 255);
+  --success: oklch(0.74 0.15 168);
+  --success-soft: color-mix(in oklab, var(--success) 14%, transparent);
+  --danger: oklch(0.69 0.19 20);
+  --danger-soft: color-mix(in oklab, var(--danger) 15%, transparent);
+  --accent-glow: color-mix(in oklab, var(--accent) 18%, transparent);
+  --surface-shadow: color-mix(in oklab, black 36%, transparent);
+  --hero-orb: color-mix(in oklab, var(--accent) 14%, transparent);
+  --dropzone-hover: color-mix(in oklab, var(--accent) 11%, transparent);
+  --dropzone-outline-idle: rgba(148, 163, 184, 0.34);
+  --dropzone-outline: color-mix(in oklab, var(--accent) 54%, transparent);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-inter);
 }
 
 * {
@@ -34,28 +69,15 @@ html {
 body {
   min-height: 100vh;
   background:
-    radial-gradient(circle at top, rgba(32, 201, 151, 0.08), transparent 28%),
+    radial-gradient(circle at top, var(--hero-orb), transparent 30%),
     var(--background);
   color: var(--foreground);
   font-family: var(--font-sans), sans-serif;
   transition:
     background-color 180ms ease,
-    color 180ms ease;
-}
-
-html.dark {
-  --background: #020303;
-  --foreground: #f8fafc;
-  --surface: rgba(17, 24, 28, 0.88);
-  --surface-soft: #132127;
-  --surface-muted: #0f1b20;
-  --border: rgba(255, 255, 255, 0.08);
-  --accent: #2dd4bf;
-  --accent-strong: #5eead4;
-  --muted: #93a8a3;
-  --success: #2dd4bf;
-  --danger: #fb7185;
-  --accent-glow: rgba(45, 212, 191, 0.035);
+    color 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease;
 }
 
 a {
@@ -70,7 +92,7 @@ textarea {
 }
 
 ::selection {
-  background: rgba(45, 212, 191, 0.25);
+  background: color-mix(in oklab, var(--accent) 28%, transparent);
 }
 
 .container-shell {
@@ -80,13 +102,33 @@ textarea {
   padding-inline: 1.5rem;
 }
 
+.upload-dropzone {
+  position: relative;
+  isolation: isolate;
+}
+
+.upload-dropzone::after {
+  content: "";
+  position: absolute;
+  inset: 1rem;
+  border: 2px dashed var(--dropzone-outline-idle);
+  border-radius: 1.5rem;
+  opacity: 1;
+  transform: scale(1);
+  transition:
+    opacity 180ms ease,
+    transform 180ms ease,
+    border-color 180ms ease;
+  pointer-events: none;
+}
+
+.upload-dropzone:hover::after,
+.upload-dropzone[data-dragging="true"]::after {
+  border-color: var(--dropzone-outline);
+}
+
 @media (min-width: 768px) {
   .container-shell {
     padding-inline: 2rem;
   }
-}
-@media (min-width: 48rem) {
-    .md\:text-\[1\.7rem\] {
-        font-size: 1.5rem;
-    }
 }
