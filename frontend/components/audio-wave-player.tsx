@@ -166,7 +166,7 @@ export function AudioWavePlayer({ file }: AudioWavePlayerProps) {
             {isPlaying ? <PauseIcon /> : <PlayIcon />}
           </button>
 
-          <div className="rounded-full border border-[var(--border)] bg-[var(--surface)] px-3.5 py-2 text-[0.78rem] text-[var(--muted)]">
+          <div className="flex h-11 w-[122px] items-center justify-center rounded-full border border-[var(--border)] bg-[var(--surface)] px-3.5 text-center text-[0.78rem] tabular-nums text-[var(--muted)]">
             {isReady
               ? `${formatTime(currentTime)} / ${formatTime(duration)}`
               : siteMessages.audio.loading}

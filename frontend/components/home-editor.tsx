@@ -980,8 +980,8 @@ export default function HomeEditor({ headerPages, footerPages, children }: HomeE
                     </p>
                   </div>
 
-                  <div className="mt-6 grid gap-6 lg:grid-cols-[360px_minmax(0,1fr)]">
-                    <div className="flex aspect-square w-full max-w-full items-center justify-center overflow-hidden rounded-[28px] border border-[var(--border)] bg-[var(--surface-soft)] sm:max-w-[280px]">
+                  <div className="mt-6 grid gap-6 lg:grid-cols-[360px_minmax(0,1fr)] lg:items-center">
+                    <div className="mx-auto flex aspect-square w-full max-w-[360px] items-center justify-center overflow-hidden rounded-[28px] border border-[var(--border)] bg-[var(--surface-soft)] lg:mx-0 lg:max-w-none">
                       {previewUrl ? (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img
@@ -997,17 +997,22 @@ export default function HomeEditor({ headerPages, footerPages, children }: HomeE
                     </div>
 
                     <div className="flex flex-col gap-4 lg:pt-3">
-                      <div className="grid gap-3 xl:grid-cols-[auto_minmax(0,1fr)_minmax(0,1fr)] xl:items-start">
+                      <div className="grid gap-3 xl:grid-cols-[auto_minmax(0,1fr)_minmax(0,1fr)] xl:items-stretch">
                         <button
                           type="button"
                           onClick={() => coverInputRef.current?.click()}
-                          className="inline-flex items-center justify-center gap-2 rounded-2xl border border-[var(--border)] bg-[var(--surface-soft)] px-5 py-3.5 text-sm font-medium text-[var(--foreground)] transition hover:border-[var(--accent)] hover:bg-[var(--surface-muted)] hover:text-[var(--accent)] xl:min-h-[86px] xl:self-stretch"
+                          className="inline-flex min-h-[78px] items-center justify-center gap-2 rounded-2xl border px-5 py-3.5 text-sm font-medium text-white transition hover:translate-y-[-1px] hover:shadow-[0_12px_24px_var(--accent-glow)] xl:min-h-[86px] xl:self-stretch"
+                          style={{
+                            borderColor: "color-mix(in oklab, var(--accent) 72%, white)",
+                            background:
+                              "linear-gradient(135deg, color-mix(in oklab, var(--accent) 36%, black), color-mix(in oklab, var(--accent) 18%, var(--surface-soft)))",
+                          }}
                         >
                           <CoverIcon />
                           {copy.actions.selectCover}
                         </button>
 
-                        <div className="rounded-[22px] border border-[var(--border)] bg-[var(--surface-soft)] p-4">
+                        <div className="flex min-h-[78px] flex-col justify-center rounded-[22px] border border-[var(--border)] bg-[var(--surface-soft)] p-4 xl:min-h-[86px]">
                           <p className="text-xs uppercase tracking-[0.2em] text-[var(--muted)]">
                             {copy.cover.mime}
                           </p>
@@ -1015,7 +1020,7 @@ export default function HomeEditor({ headerPages, footerPages, children }: HomeE
                             {metadata?.cover_mime_type ?? coverFile?.type ?? copy.cover.none}
                           </p>
                         </div>
-                        <div className="rounded-[22px] border border-[var(--border)] bg-[var(--surface-soft)] p-4">
+                        <div className="flex min-h-[78px] flex-col justify-center rounded-[22px] border border-[var(--border)] bg-[var(--surface-soft)] p-4 xl:min-h-[86px]">
                           <p className="text-xs uppercase tracking-[0.2em] text-[var(--muted)]">
                             {copy.cover.newImage}
                           </p>
@@ -1026,7 +1031,7 @@ export default function HomeEditor({ headerPages, footerPages, children }: HomeE
                       </div>
 
                       <div className="rounded-[22px] border border-[var(--border)] bg-[var(--surface-soft)] p-4">
-                        <p className="text-sm leading-7 text-[var(--muted)]">
+                        <p className="text-[0.76rem] leading-5 text-[var(--muted)]">
                           {copy.cover.instructions}
                         </p>
                       </div>
