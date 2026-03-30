@@ -685,7 +685,6 @@ export default function HomeEditor({ headerPages, footerPages, children }: HomeE
           </div>
 
           <div className="flex items-center gap-3">
-            <ContentLinks pages={headerPages} className="hidden lg:flex" linkClassName="text-xs" />
             <MobileContentMenu pages={headerPages} />
             <span className="hidden items-center gap-1.5 rounded-full border border-[var(--border)] bg-[var(--surface-soft)] px-3.5 py-1.5 text-xs font-medium text-[var(--accent)] sm:inline-flex">
               <SparklesIcon />

@@ -63,14 +63,14 @@ export function MobileContentMenu({ pages }: MobileContentMenuProps) {
         aria-label={siteMessages.content.openMenu}
         title={siteMessages.content.openMenu}
         onClick={() => setIsOpen(true)}
-        className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-[var(--border)] bg-[var(--surface-strong)] text-[var(--foreground)] shadow-[0_12px_28px_var(--surface-shadow)] transition hover:border-[var(--accent)] hover:bg-[var(--surface-soft)] hover:text-[var(--accent)] lg:hidden"
+        className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-[var(--border)] bg-[var(--surface-strong)] text-[var(--foreground)] shadow-[0_12px_28px_var(--surface-shadow)] transition hover:border-[var(--accent)] hover:bg-[var(--surface-soft)] hover:text-[var(--accent)]"
       >
         <MenuIcon />
       </button>
 
       {isMounted && isOpen
         ? createPortal(
-        <div className="fixed inset-0 z-50 lg:hidden">
+        <div className="fixed inset-0 z-50">
           <button
             type="button"
             aria-label={siteMessages.content.closeMenu}
@@ -78,7 +78,7 @@ export function MobileContentMenu({ pages }: MobileContentMenuProps) {
             onClick={() => setIsOpen(false)}
           />
 
-          <aside className="absolute right-0 top-0 flex h-full w-[min(22rem,100vw)] flex-col border-l border-[var(--border)] bg-[var(--surface)] p-5 shadow-[-24px_0_48px_var(--surface-shadow)]">
+          <aside className="absolute right-0 top-0 flex h-full w-[min(24rem,100vw)] flex-col border-l border-[var(--border)] bg-[var(--surface)] p-5 shadow-[-24px_0_48px_var(--surface-shadow)]">
             <div className="flex items-center justify-between gap-4">
               <div>
                 <p className="text-xs uppercase tracking-[0.24em] text-[var(--muted)]">
@@ -105,7 +105,7 @@ export function MobileContentMenu({ pages }: MobileContentMenuProps) {
                 <Link
                   key={page.slug}
                   href={`/${page.slug}`}
-                  className="rounded-[20px] border border-[var(--border)] bg-[var(--surface-soft)] px-4 py-3 text-sm font-medium text-[var(--foreground)] transition hover:border-[var(--accent)] hover:text-[var(--accent)]"
+                  className="rounded-[20px] border border-[var(--border)] bg-[var(--surface-soft)] px-4 py-3 text-[0.8rem] font-medium text-[var(--foreground)] transition hover:border-[var(--accent)] hover:text-[var(--accent)]"
                 >
                   {page.title}
                 </Link>

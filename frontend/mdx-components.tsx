@@ -18,7 +18,7 @@ export function useMDXComponents(components: MDXComponents = {}): MDXComponents 
     h2: ({ className, ...props }) => (
       <h2
         className={mergeClasses(
-          "mt-10 text-2xl font-semibold tracking-[-0.03em] text-[var(--foreground)] md:text-[1.8rem]",
+          "mt-6 text-[1.2rem] font-semibold tracking-[-0.03em] text-[var(--foreground)] md:text-[1.4rem]",
           className,
         )}
         {...props}
@@ -27,7 +27,16 @@ export function useMDXComponents(components: MDXComponents = {}): MDXComponents 
     h3: ({ className, ...props }) => (
       <h3
         className={mergeClasses(
-          "mt-8 text-xl font-semibold tracking-[-0.02em] text-[var(--foreground)]",
+          "mt-5 text-[1.2rem] font-semibold tracking-[-0.02em] text-[var(--foreground)] md:text-[1.3rem]",
+          className,
+        )}
+        {...props}
+      />
+    ),
+    h4: ({ className, ...props }) => (
+      <h4
+        className={mergeClasses(
+          "mt-4 text-[1.02rem] font-semibold tracking-[-0.01em] text-[var(--foreground)] md:text-[1.08rem]",
           className,
         )}
         {...props}
@@ -35,24 +44,30 @@ export function useMDXComponents(components: MDXComponents = {}): MDXComponents 
     ),
     p: ({ className, ...props }) => (
       <p
-        className={mergeClasses("text-base leading-8 text-[var(--muted)]", className)}
+        className={mergeClasses("text-[0.8rem] leading-6 text-[var(--muted)]", className)}
         {...props}
       />
     ),
     ul: ({ className, ...props }) => (
       <ul
-        className={mergeClasses("list-disc space-y-3 pl-6 text-[var(--muted)]", className)}
+        className={mergeClasses(
+          "list-disc space-y-0 pl-6 text-[0.8rem] text-[var(--muted)]",
+          className,
+        )}
         {...props}
       />
     ),
     ol: ({ className, ...props }) => (
       <ol
-        className={mergeClasses("list-decimal space-y-3 pl-6 text-[var(--muted)]", className)}
+        className={mergeClasses(
+          "list-decimal space-y-0 pl-6 text-[0.8rem] text-[var(--muted)]",
+          className,
+        )}
         {...props}
       />
     ),
     li: ({ className, ...props }) => (
-      <li className={mergeClasses("leading-8", className)} {...props} />
+      <li className={mergeClasses("leading-5", className)} {...props} />
     ),
     a: ({ className, ...props }) => (
       <a

@@ -132,3 +132,9 @@ textarea {
     padding-inline: 2rem;
   }
 }
+
+@layer utilities {
+  .mt-6 {
+    margin-top: calc(var(--spacing) * 3);
+  }
+}

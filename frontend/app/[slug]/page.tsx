@@ -155,11 +155,11 @@ export default async function ContentPage({ params }: ContentPageProps) {
               <h1 className="mt-3 text-[2rem] font-semibold tracking-[-0.04em] text-[var(--foreground)] md:text-[2.75rem]">
                 {page.title}
               </h1>
-              <p className="mt-4 max-w-2xl text-base leading-8 text-[var(--muted)]">
+              <p className="mt-3 max-w-2xl text-[0.8rem] leading-5 text-[var(--muted)]">
                 {page.description}
               </p>
 
-              <div className="mt-8 space-y-6">{content}</div>
+              <div className="mt-6 space-y-4">{content}</div>
             </article>
           </div>
         </div>
