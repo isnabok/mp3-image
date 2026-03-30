@@ -103,6 +103,13 @@
     "none": "none",
     "notSelected": "not selected"
   },
+  "audio": {
+    "panelTitle": "Wave player",
+    "play": "Play audio",
+    "pause": "Pause audio",
+    "loading": "Loading waveform...",
+    "waveformLabel": "Audio waveform"
+  },
   "metadata": {
     "panelTitle": "Metadata",
     "title": "Tag editor",

@@ -37,8 +37,8 @@ export default async function ContentLayout({
           </div>
 
           <div className="flex items-center justify-end gap-3">
-            <MobileContentMenu pages={headerPages} />
             <ThemeToggle label={siteMessages.actions.toggleTheme} />
+            <MobileContentMenu pages={headerPages} />
           </div>
         </div>
       </header>

@@ -2,6 +2,7 @@
 
 import { ChangeEvent, DragEvent, ReactNode, useEffect, useRef, useState } from "react";
 
+import { AudioWavePlayer } from "@/components/audio-wave-player";
 import { ContentLinks, type ContentLinkItem } from "@/components/content-links";
 import { MobileContentMenu } from "@/components/mobile-content-menu";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -685,12 +686,12 @@ export default function HomeEditor({ headerPages, footerPages, children }: HomeE
           </div>
 
           <div className="flex items-center gap-3">
-            <MobileContentMenu pages={headerPages} />
             <span className="hidden items-center gap-1.5 rounded-full border border-[var(--border)] bg-[var(--surface-soft)] px-3.5 py-1.5 text-xs font-medium text-[var(--accent)] sm:inline-flex">
               <SparklesIcon />
               {copy.header.badge}
             </span>
             <ThemeToggle label={copy.actions.toggleTheme} />
+            <MobileContentMenu pages={headerPages} />
           </div>
         </div>
       </header>
@@ -996,18 +997,16 @@ export default function HomeEditor({ headerPages, footerPages, children }: HomeE
                     </div>
 
                     <div className="flex flex-col gap-4 lg:pt-3">
-                      <div className="flex flex-wrap gap-3">
+                      <div className="grid gap-3 xl:grid-cols-[auto_minmax(0,1fr)_minmax(0,1fr)] xl:items-start">
                         <button
                           type="button"
                           onClick={() => coverInputRef.current?.click()}
-                          className="inline-flex items-center gap-2 rounded-2xl border border-[var(--border)] bg-[var(--surface-soft)] px-5 py-3.5 text-sm font-medium text-[var(--foreground)] transition hover:border-[var(--accent)] hover:bg-[var(--surface-muted)] hover:text-[var(--accent)]"
+                          className="inline-flex items-center justify-center gap-2 rounded-2xl border border-[var(--border)] bg-[var(--surface-soft)] px-5 py-3.5 text-sm font-medium text-[var(--foreground)] transition hover:border-[var(--accent)] hover:bg-[var(--surface-muted)] hover:text-[var(--accent)] xl:min-h-[86px] xl:self-stretch"
                         >
                           <CoverIcon />
                           {copy.actions.selectCover}
                         </button>
-                      </div>
 
-                      <div className="grid gap-3 sm:grid-cols-2">
                         <div className="rounded-[22px] border border-[var(--border)] bg-[var(--surface-soft)] p-4">
                           <p className="text-xs uppercase tracking-[0.2em] text-[var(--muted)]">
                             {copy.cover.mime}
@@ -1031,6 +1030,8 @@ export default function HomeEditor({ headerPages, footerPages, children }: HomeE
                           {copy.cover.instructions}
                         </p>
                       </div>
+
+                      <AudioWavePlayer file={mp3File!} />
                     </div>
                   </div>
                 </SectionCard>
