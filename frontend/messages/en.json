@@ -50,42 +50,42 @@
     ]
   },
   "file": {
-    "readyTitle": "Current file",
-    "readyDescription": "Metadata is loaded. You can keep editing tags and cover art.",
-    "name": "File",
-    "size": "Size"
+    "readyTitle": "MP3 Ready",
+    "readyDescription": "MP3 tags loaded. You can now edit tags and add cover art.",
+    "name": "File name",
+    "size": "File size"
   },
   "status": {
-    "panelTitle": "Status",
-    "idle": "Drop an MP3 into the area below or choose a file from your computer.",
-    "reading": "Reading tags from {filename}...",
-    "loaded": "File loaded. You can now edit tags and cover art.",
-    "loadFailed": "Could not load metadata.",
-    "coverSelected": "New cover selected: {filename}",
-    "saving": "Saving the updated file...",
+    "panelTitle": "MP3 Editor Status",
+    "idle": "Drop your MP3 here or choose a file to edit MP3 tags and add cover.",
+    "reading": "Loading MP3 and reading tags from {filename}...",
+    "loaded": "MP3 loaded. You can now edit tags and add cover image.",
+    "loadFailed": "Could not load MP3 tags.",
+    "coverSelected": "Cover image selected: {filename}",
+    "saving": "Saving MP3 with updated tags and cover...",
     "saved": "Done. Your updated MP3 is downloading.",
-    "saveFailed": "Could not save the updated file.",
-    "selectFileFirst": "Select an MP3 file first.",
-    "currentFile": "Current file: {filename}"
+    "saveFailed": "Could not save the updated MP3.",
+    "selectFileFirst": "Upload an MP3 file first.",
+    "currentFile": "Current MP3: {filename}"
   },
   "warnings": {
     "panelTitle": "Warnings",
-    "empty": "Everything looks clean so far.",
-    "coverPending": "Warning: cover art is selected but not saved yet."
+    "empty": "No issues detected.",
+    "coverPending": "Cover image selected but not added to MP3 yet. Save to apply."
   },
   "progress": {
-    "uploadPanelTitle": "Upload status",
-    "savePanelTitle": "Processing and download",
-    "uploading": "Uploading file...",
-    "processingMetadata": "Reading metadata on the server...",
-    "metadataReady": "Metadata loaded.",
-    "uploadingChanges": "Uploading file and changes...",
-    "preparingDownload": "Preparing the new MP3...",
-    "downloading": "Downloading the finished file...",
-    "downloadReady": "File is ready and downloaded.",
+    "uploadPanelTitle": "Upload MP3",
+    "savePanelTitle": "Processing MP3",
+    "uploading": "Uploading MP3...",
+    "processingMetadata": "Reading MP3 tags...",
+    "metadataReady": "Tags loaded.",
+    "uploadingChanges": "Applying tag changes...",
+    "preparingDownload": "Preparing your updated MP3...",
+    "downloading": "Downloading MP3...",
+    "downloadReady": "Done! Your MP3 is ready.",
     "fileSize": "File size",
-    "downloadSize": "Downloaded file size",
-    "selectedFile": "Selected file",
+    "downloadSize": "Download size",
+    "selectedFile": "Selected MP3",
     "percent": "{value}%",
     "unknownPercent": "..."
   },
@@ -95,27 +95,27 @@
     "saveFailed": "Could not save the updated MP3."
   },
   "cover": {
-    "panelTitle": "Cover",
-    "empty": "This file does not have embedded cover art yet.",
-    "previewAlt": "MP3 cover preview",
-    "instructions": "Supports PNG, JPG, and WEBP. Add cover image to MP3 easily — square images work best and are auto-optimized for embedding.",
-    "mime": "MIME",
-    "newImage": "New image",
-    "none": "none",
-    "notSelected": "not selected"
+    "panelTitle": "MP3 Cover Art",
+    "empty": "No cover image found in this MP3.",
+    "previewAlt": "MP3 cover art preview",
+    "instructions": "Supports PNG, JPG, WEBP. Add cover image to MP3 — square images work best and are auto-optimized.",
+    "mime": "Format",
+    "newImage": "Selected image",
+    "none": "None",
+    "notSelected": "Not selected"
   },
   "audio": {
-    "panelTitle": "Wave player",
+    "panelTitle": "MP3 Player",
     "play": "Play audio",
     "pause": "Pause audio",
-    "loading": "Loading waveform...",
-    "waveformLabel": "Audio waveform"
+    "loading": "Loading audio...",
+    "waveformLabel": "Waveform preview"
   },
   "metadata": {
-    "panelTitle": "Metadata",
-    "title": "Tag editor",
+    "panelTitle": "MP3 Tags",
+    "title": "Edit MP3 Tags",
     "commentLabel": "Comment",
-    "commentPlaceholder": "Comment text for the COMM ID3 tag",
+    "commentPlaceholder": "Add a comment (COMM tag)",
     "fields": {
       "outputFilename": {
         "label": "Filename",
@@ -148,20 +148,20 @@
     }
   },
   "footer": {
-    "text": "MP3 Tag Editor keeps the production flow simple: upload, edit, and download."
+    "text": "MP3 Tag Editor | Simple MP3 editing, made with ❤️"
   },
   "content": {
-    "backToEditor": "Back to editor",
+    "backToEditor": "Back to MP3 Editor",
     "home": "Home",
-    "breadcrumbs": "Breadcrumbs",
+    "breadcrumbs": "Navigation",
     "menuTitle": "Pages",
-    "openMenu": "Open pages menu",
-    "closeMenu": "Close pages menu"
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu"
   },
   "cookies": {
     "bannerTitle": "Cookies",
-    "bannerText": "This site uses cookies and similar technologies for essential functionality and to remember your cookie consent preference.",
-    "learnMore": "Cookie policy",
+    "bannerText": "We use cookies for essential functionality and to remember your preferences.",
+    "learnMore": "Learn more",
     "accept": "Accept"
   }
 }
