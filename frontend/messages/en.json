@@ -98,7 +98,7 @@
     "panelTitle": "Cover",
     "empty": "This file does not have embedded cover art yet.",
     "previewAlt": "MP3 cover preview",
-    "instructions": "Supported cover formats: PNG, JPG, and WEBP. Square images usually look best, and uploaded artwork is automatically optimized for embedding into the MP3 file.",
+    "instructions": "Supports PNG, JPG, and WEBP. Add cover image to MP3 easily — square images work best and are auto-optimized for embedding.",
     "mime": "MIME",
     "newImage": "New image",
     "none": "none",
