@@ -895,14 +895,14 @@ export default function HomeEditor({ headerPages, footerPages, children }: HomeE
                     </div>
                   </div>
 
-                  <div className="flex flex-wrap items-center gap-3 lg:justify-end">
-                    <span className="rounded-full border border-[var(--border)] bg-[var(--surface-soft)] px-4 py-2 text-sm text-[var(--muted)]">
+                  <div className="flex w-full flex-col gap-3 sm:max-w-[320px] lg:w-auto lg:max-w-none lg:flex-row lg:flex-wrap lg:items-center lg:justify-end">
+                    <span className="w-full rounded-full border border-[var(--border)] bg-[var(--surface-soft)] px-4 py-2 text-center text-sm text-[var(--muted)] lg:w-auto lg:text-left">
                       {copy.file.size}: {formatBytes(mp3File?.size ?? null)}
                     </span>
                     <button
                       type="button"
                       onClick={() => mp3InputRef.current?.click()}
-                      className="inline-flex items-center gap-2 rounded-2xl border border-[var(--border)] bg-[var(--surface-soft)] px-5 py-3 text-sm font-medium text-[var(--foreground)] transition hover:border-[var(--accent)] hover:bg-[var(--surface-muted)] hover:text-[var(--accent)]"
+                      className="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-transparent bg-[linear-gradient(135deg,var(--accent),var(--accent-strong))] px-5 py-3 text-sm font-semibold text-[var(--accent-contrast)] shadow-[0_16px_32px_var(--accent-glow)] transition hover:translate-y-[-1px] hover:shadow-[0_20px_36px_var(--accent-glow)] lg:w-auto"
                     >
                       <UploadIcon />
                       {copy.actions.changeMp3}
@@ -910,7 +910,7 @@ export default function HomeEditor({ headerPages, footerPages, children }: HomeE
                     <button
                       type="button"
                       onClick={resetEditor}
-                      className="inline-flex items-center gap-2 rounded-2xl border border-[var(--border)] bg-[var(--surface-soft)] px-5 py-3 text-sm font-medium text-[var(--foreground)] transition hover:border-[var(--danger)] hover:text-[var(--danger)]"
+                      className="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-transparent bg-[linear-gradient(135deg,var(--danger),color-mix(in_oklab,var(--danger)_78%,black))] px-5 py-3 text-sm font-semibold text-white shadow-[0_16px_32px_var(--danger-soft)] transition hover:translate-y-[-1px] hover:shadow-[0_20px_36px_var(--danger-soft)] lg:w-auto"
                     >
                       <CloseIcon />
                       {copy.actions.removeMp3}
