@@ -20,8 +20,8 @@
     "toggleTheme": "Toggle theme"
   },
   "hero": {
-    "title": "Upload MP3 files, edit ID3 tags, and add a new cover image.",
-    "description": "The interface is focused on one task: open an MP3, update its metadata, and download the refreshed file under a new name.",
+    "title": "Edit MP3 Tags Online & Add Cover Image",
+    "description": "Upload your MP3, edit ID3 tags, and add image to MP3 in seconds. Fast, free and easy to use — no software needed. Change MP3 tags, update artist, title and album, and add cover image to MP3. Works instantly in your browser.",
     "dropzoneIdle": "Drop your MP3 here",
     "dropzoneReading": "Reading metadata...",
     "dropzoneDescription": "Or click this area to choose a file from your computer. After upload, all editing fields will appear below.",
