@@ -22,30 +22,30 @@
   "hero": {
     "title": "Edit MP3 Tags Online & Add Cover Image",
     "description": "Upload your MP3, edit ID3 tags, and add image to MP3 in seconds. Fast, free and easy to use — no software needed. Change MP3 tags, update artist, title and album, and add cover image to MP3. Works instantly in your browser.",
-    "dropzoneIdle": "Drop your MP3 here",
-    "dropzoneReading": "Reading metadata...",
-    "dropzoneDescription": "Or click this area to choose a file from your computer. After upload, all editing fields will appear below.",
-    "dropzoneSupport": "Supported format: MP3",
+    "dropzoneIdle": "Upload MP3 to Edit Tags & Add Cover",
+    "dropzoneReading": "Processing your MP3 and loading tags...",
+    "dropzoneDescription": "Drag & drop your MP3 or click to upload. Edit MP3 tags and add image to MP3 instantly — fast and free.",
+    "dropzoneSupport": "Supports MP3 • Add cover (PNG, JPG, WEBP)",
     "steps": [
-      "Upload one MP3 file.",
-      "Wait until the current tags are loaded.",
-      "Update the filename, metadata, and cover.",
-      "Download the finished MP3."
+      "Upload your MP3 file.",
+      "Edit MP3 tags and metadata.",
+      "Add cover image to MP3.",
+      "Download your updated file."
     ]
   },
   "features": {
     "items": [
       {
-        "title": "Fast processing",
-        "description": "Read tags, update artwork, and export in one clean flow."
+        "title": "Edit MP3 Tags Online",
+        "description": "Change MP3 tags online: title, artist, album, track, genre, year and filename. Easy-to-use ID3 tag editor."
       },
       {
-        "title": "Metadata editor",
-        "description": "Change filename, title, artist, album, genre, year, track, and comment."
+        "title": "Image to MP3 (Cover Art)",
+        "description": "Add cover image to MP3 or update artwork in seconds. Works with PNG, JPG and WEBP formats."
       },
       {
-        "title": "Cover workflow",
-        "description": "Preview the current artwork, replace it, and keep player-friendly export settings."
+        "title": "Fast & Free MP3 Editor",
+        "description": "Upload MP3, edit tags and download instantly. No install, no limits, 100% free MP3 tag editor online."
       }
     ]
   },
