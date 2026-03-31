@@ -1,13 +1,13 @@
 {
   "lang": "en",
   "meta": {
-    "title": "MP3 Cover & ID3 Tag Editor",
-    "description": "Upload MP3 files, edit ID3 tags, change the download filename, and save an updated file with new cover art."
+    "title": "Edit Tag MP3 Online & Add Cover Image Free",
+    "description": "Edit MP3 tags online, add cover image to MP3, update artist, title & album metadata. Free, fast and no upload limits on tagsmp3.com"
   },
   "header": {
-    "eyebrow": "MP3 Cover Editor",
-    "title": "MP3 Tag Editor",
-    "subtitle": "Modern metadata workflow",
+    "eyebrow": "MP3 Tags & Cover Editor",
+    "title": "MP3 Tags Editor",
+    "subtitle": "Change mp3 tags online & add cover art",
     "badge": "Free Mode"
   },
   "actions": {
