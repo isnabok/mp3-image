@@ -1001,12 +1001,7 @@ export default function HomeEditor({ headerPages, footerPages, children }: HomeE
                         <button
                           type="button"
                           onClick={() => coverInputRef.current?.click()}
-                          className="inline-flex min-h-[78px] items-center justify-center gap-2 rounded-2xl border px-5 py-3.5 text-sm font-medium text-white transition hover:translate-y-[-1px] hover:shadow-[0_12px_24px_var(--accent-glow)] xl:min-h-[86px] xl:self-stretch"
-                          style={{
-                            borderColor: "color-mix(in oklab, var(--accent) 72%, white)",
-                            background:
-                              "linear-gradient(135deg, color-mix(in oklab, var(--accent) 36%, black), color-mix(in oklab, var(--accent) 18%, var(--surface-soft)))",
-                          }}
+                          className="inline-flex min-h-[78px] items-center justify-center gap-2 rounded-2xl border border-transparent bg-[linear-gradient(135deg,var(--accent),var(--accent-strong))] px-5 py-3.5 text-sm font-semibold text-[var(--accent-contrast)] shadow-[0_16px_32px_var(--accent-glow)] transition hover:translate-y-[-1px] hover:shadow-[0_20px_36px_var(--accent-glow)] xl:min-h-[86px] xl:self-stretch"
                         >
                           <CoverIcon />
                           {copy.actions.selectCover}
