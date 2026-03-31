@@ -80,6 +80,11 @@ type HomeEditorProps = {
   children?: ReactNode;
 };
 
+function isMissingCoverWarning(warning: string): boolean {
+  const normalized = warning.trim().toLowerCase();
+  return normalized === "cover art is missing." || normalized === "cover art is missing";
+}
+
 function getErrorMessage(error: unknown): string {
   if (error instanceof Error) {
     return error.message;
@@ -399,6 +404,14 @@ export default function HomeEditor({ headerPages, footerPages, children }: HomeE
   const previewUrl = localCoverPreviewUrl ?? metadata?.cover_data_url ?? null;
   const hasLoadedFile = Boolean(mp3File && metadata);
   const shouldShowPreloadFeedback = !hasLoadedFile && (Boolean(mp3File) || readProgress.phase !== "idle" || Boolean(error));
+  const hasPendingCoverChanges = Boolean(coverFile) && saveProgress.phase !== "completed";
+  const visibleWarnings = hasPendingCoverChanges
+    ? [
+        ...warnings.filter((warning) => !isMissingCoverWarning(warning)),
+        copy.warnings.coverPending,
+      ]
+    : warnings;
+  const warningTone = visibleWarnings.length === 0 ? "success" : hasPendingCoverChanges ? "warning" : "danger";
 
   const resetEditor = () => {
     setMp3File(null);
@@ -631,6 +644,18 @@ export default function HomeEditor({ headerPages, footerPages, children }: HomeE
       URL.revokeObjectURL(objectUrl);
 
       setStatus(copy.status.saved);
+      if (coverFile) {
+        setWarnings((current) => current.filter((warning) => !isMissingCoverWarning(warning)));
+        setMetadata((current) =>
+          current
+            ? {
+                ...current,
+                has_cover: true,
+                cover_mime_type: coverFile.type || current.cover_mime_type,
+              }
+            : current,
+        );
+      }
       setSaveProgress({
         phase: "completed",
         percent: 100,
@@ -745,21 +770,30 @@ export default function HomeEditor({ headerPages, footerPages, children }: HomeE
                   <div className="flex items-start gap-4">
                     <div
                       className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl ${
-                        warnings.length > 0
+                        warningTone === "danger"
                           ? "bg-[var(--danger-soft)] text-[var(--danger)]"
-                          : "bg-[var(--success-soft)] text-[var(--success)]"
+                          : warningTone === "warning"
+                            ? "bg-[var(--warning-soft)] text-[var(--warning)]"
+                            : "bg-[var(--success-soft)] text-[var(--success)]"
                       }`}
                     >
-                      {warnings.length > 0 ? <AlertIcon /> : <CheckIcon />}
+                      {warningTone === "success" ? <CheckIcon /> : <AlertIcon />}
                     </div>
                     <div className="min-w-0">
                       <p className="text-xs uppercase tracking-[0.22em] text-[var(--muted)]">
                         {copy.warnings.panelTitle}
                       </p>
-                      {warnings.length > 0 ? (
+                      {visibleWarnings.length > 0 ? (
                         <div className="mt-3 space-y-2">
-                          {warnings.map((warning) => (
-                            <p key={warning} className="text-sm text-[var(--muted)]">
+                          {visibleWarnings.map((warning) => (
+                            <p
+                              key={warning}
+                              className={`text-sm ${
+                                warningTone === "warning"
+                                  ? "text-[var(--warning)]"
+                                  : "text-[var(--muted)]"
+                              }`}
+                            >
                               {warning}
                             </p>
                           ))}
@@ -940,21 +974,30 @@ export default function HomeEditor({ headerPages, footerPages, children }: HomeE
                   <div className="flex h-full items-center gap-4">
                     <div
                       className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl ${
-                        warnings.length > 0
+                        warningTone === "danger"
                           ? "bg-[var(--danger-soft)] text-[var(--danger)]"
-                          : "bg-[var(--success-soft)] text-[var(--success)]"
+                          : warningTone === "warning"
+                            ? "bg-[var(--warning-soft)] text-[var(--warning)]"
+                            : "bg-[var(--success-soft)] text-[var(--success)]"
                       }`}
                     >
-                      {warnings.length > 0 ? <AlertIcon /> : <CheckIcon />}
+                      {warningTone === "success" ? <CheckIcon /> : <AlertIcon />}
                     </div>
                     <div className="min-w-0 self-center">
                       <p className="text-xs uppercase tracking-[0.22em] text-[var(--muted)]">
                         {copy.warnings.panelTitle}
                       </p>
-                      {warnings.length > 0 ? (
+                      {visibleWarnings.length > 0 ? (
                         <div className="mt-3 space-y-2">
-                          {warnings.map((warning) => (
-                            <p key={warning} className="text-sm text-[var(--muted)]">
+                          {visibleWarnings.map((warning) => (
+                            <p
+                              key={warning}
+                              className={`text-sm ${
+                                warningTone === "warning"
+                                  ? "text-[var(--warning)]"
+                                  : "text-[var(--muted)]"
+                              }`}
+                            >
                               {warning}
                             </p>
                           ))}

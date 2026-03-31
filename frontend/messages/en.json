@@ -70,7 +70,8 @@
   },
   "warnings": {
     "panelTitle": "Warnings",
-    "empty": "Everything looks clean so far."
+    "empty": "Everything looks clean so far.",
+    "coverPending": "Warning: cover art is selected but not saved yet."
   },
   "progress": {
     "uploadPanelTitle": "Upload status",

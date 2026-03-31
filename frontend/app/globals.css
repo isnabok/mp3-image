@@ -17,6 +17,8 @@
   --muted: oklch(0.52 0.015 255);
   --success: oklch(0.67 0.17 165);
   --success-soft: color-mix(in oklab, var(--success) 14%, transparent);
+  --warning: oklch(0.72 0.16 82);
+  --warning-soft: color-mix(in oklab, var(--warning) 16%, transparent);
   --danger: oklch(0.61 0.2 25);
   --danger-soft: color-mix(in oklab, var(--danger) 14%, transparent);
   --accent-glow: color-mix(in oklab, var(--accent) 18%, transparent);
@@ -43,6 +45,8 @@ html.dark {
   --muted: oklch(0.63 0.012 255);
   --success: oklch(0.74 0.15 168);
   --success-soft: color-mix(in oklab, var(--success) 14%, transparent);
+  --warning: oklch(0.8 0.15 86);
+  --warning-soft: color-mix(in oklab, var(--warning) 18%, transparent);
   --danger: oklch(0.69 0.19 20);
   --danger-soft: color-mix(in oklab, var(--danger) 15%, transparent);
   --accent-glow: color-mix(in oklab, var(--accent) 18%, transparent);
