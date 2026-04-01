@@ -6,6 +6,7 @@ import { AudioWavePlayer } from "@/components/audio-wave-player";
 import { ContentLinks, type ContentLinkItem } from "@/components/content-links";
 import { MobileContentMenu } from "@/components/mobile-content-menu";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { trackEvent } from "@/lib/analytics";
 import { formatMessage, siteMessages } from "@/lib/i18n";
 import Link from "next/link";
 
@@ -497,6 +498,11 @@ export default function HomeEditor({ headerPages, footerPages, children }: HomeE
         track: data.metadata.track ?? "",
         comment: data.metadata.comment ?? "",
       });
+      trackEvent("track_uploaded", {
+        file_extension: "mp3",
+        file_size_bytes: selectedFile.size,
+        had_embedded_cover: data.metadata.has_cover,
+      });
       setStatus(copy.status.loaded);
       setReadProgress({
         phase: "completed",
@@ -563,6 +569,10 @@ export default function HomeEditor({ headerPages, footerPages, children }: HomeE
     setCoverFile(selectedFile);
     setLocalCoverPreviewUrl(nextPreviewUrl);
     setError("");
+    trackEvent("cover_selected", {
+      image_type: selectedFile.type || "unknown",
+      image_size_bytes: selectedFile.size,
+    });
     setStatus(formatMessage(copy.status.coverSelected, { filename: selectedFile.name }));
     event.target.value = "";
   };
@@ -643,6 +653,10 @@ export default function HomeEditor({ headerPages, footerPages, children }: HomeE
       document.body.removeChild(link);
       URL.revokeObjectURL(objectUrl);
 
+      trackEvent("mp3_downloaded", {
+        file_size_bytes: blob.size,
+        had_new_cover: Boolean(coverFile),
+      });
       setStatus(copy.status.saved);
       if (coverFile) {
         setWarnings((current) => current.filter((warning) => !isMissingCoverWarning(warning)));
