@@ -1,11 +1,16 @@
-const BACKEND_INTERNAL_API_URL =
-  process.env.BACKEND_INTERNAL_API_URL ?? "http://backend:8000";
-
-const API_SHARED_TOKEN = process.env.API_SHARED_TOKEN ?? "";
+const BACKEND_INTERNAL_API_URL = process.env.BACKEND_INTERNAL_API_URL?.trim() ?? "";
+const API_SHARED_TOKEN = process.env.API_SHARED_TOKEN?.trim() ?? "";
 
 export const runtime = "nodejs";
 
 export async function POST(request: Request): Promise<Response> {
+  if (!BACKEND_INTERNAL_API_URL) {
+    return Response.json(
+      { detail: "Backend internal API URL is not configured on the frontend server." },
+      { status: 500 },
+    );
+  }
+
   if (!API_SHARED_TOKEN) {
     return Response.json(
       { detail: "API token is not configured on the frontend server." },
