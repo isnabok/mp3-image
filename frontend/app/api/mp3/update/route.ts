@@ -19,28 +19,37 @@ export async function POST(request: Request): Promise<Response> {
   }
 
   const formData = await request.formData();
-  const upstreamResponse = await fetch(`${BACKEND_INTERNAL_API_URL}/api/v1/mp3/update`, {
-    method: "POST",
-    headers: {
-      "x-api-key": API_SHARED_TOKEN,
-    },
-    body: formData,
-  });
+  try {
+    const upstreamResponse = await fetch(`${BACKEND_INTERNAL_API_URL}/api/v1/mp3/update`, {
+      method: "POST",
+      headers: {
+        "x-api-key": API_SHARED_TOKEN,
+      },
+      body: formData,
+    });
 
-  const responseHeaders = new Headers();
-  const contentType = upstreamResponse.headers.get("content-type");
-  const contentDisposition = upstreamResponse.headers.get("content-disposition");
+    const responseHeaders = new Headers();
+    const contentType = upstreamResponse.headers.get("content-type");
+    const contentDisposition = upstreamResponse.headers.get("content-disposition");
 
-  if (contentType) {
-    responseHeaders.set("content-type", contentType);
+    if (contentType) {
+      responseHeaders.set("content-type", contentType);
+    }
+
+    if (contentDisposition) {
+      responseHeaders.set("content-disposition", contentDisposition);
+    }
+
+    return new Response(upstreamResponse.body, {
+      status: upstreamResponse.status,
+      headers: responseHeaders,
+    });
+  } catch (error) {
+    const detail = error instanceof Error ? error.message : "Failed to reach backend API.";
+
+    return Response.json(
+      { detail: `Frontend proxy could not reach backend API at ${BACKEND_INTERNAL_API_URL}: ${detail}` },
+      { status: 500 },
+    );
   }
-
-  if (contentDisposition) {
-    responseHeaders.set("content-disposition", contentDisposition);
-  }
-
-  return new Response(upstreamResponse.body, {
-    status: upstreamResponse.status,
-    headers: responseHeaders,
-  });
 }

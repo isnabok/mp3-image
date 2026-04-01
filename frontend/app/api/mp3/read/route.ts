@@ -19,21 +19,30 @@ export async function POST(request: Request): Promise<Response> {
   }
 
   const formData = await request.formData();
-  const upstreamResponse = await fetch(`${BACKEND_INTERNAL_API_URL}/api/v1/mp3/read`, {
-    method: "POST",
-    headers: {
-      "x-api-key": API_SHARED_TOKEN,
-    },
-    body: formData,
-  });
+  try {
+    const upstreamResponse = await fetch(`${BACKEND_INTERNAL_API_URL}/api/v1/mp3/read`, {
+      method: "POST",
+      headers: {
+        "x-api-key": API_SHARED_TOKEN,
+      },
+      body: formData,
+    });
 
-  const contentType = upstreamResponse.headers.get("content-type") ?? "application/json";
-  const body = await upstreamResponse.text();
+    const contentType = upstreamResponse.headers.get("content-type") ?? "application/json";
+    const body = await upstreamResponse.text();
 
-  return new Response(body, {
-    status: upstreamResponse.status,
-    headers: {
-      "content-type": contentType,
-    },
-  });
+    return new Response(body, {
+      status: upstreamResponse.status,
+      headers: {
+        "content-type": contentType,
+      },
+    });
+  } catch (error) {
+    const detail = error instanceof Error ? error.message : "Failed to reach backend API.";
+
+    return Response.json(
+      { detail: `Frontend proxy could not reach backend API at ${BACKEND_INTERNAL_API_URL}: ${detail}` },
+      { status: 500 },
+    );
+  }
 }
