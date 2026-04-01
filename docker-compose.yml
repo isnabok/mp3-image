@@ -1,5 +1,5 @@
 services:
-  backend:
+  backend-tagsmp3:
     build:
       context: ./backend
       dockerfile: Dockerfile
@@ -30,5 +30,5 @@ services:
       SITE_VERIFICATION_BING: ${SITE_VERIFICATION_BING:-}
       GOOGLE_ANALYTICS_ID: ${GOOGLE_ANALYTICS_ID:-}
     depends_on:
-      - backend
+      - backend-tagsmp3
     restart: unless-stopped
