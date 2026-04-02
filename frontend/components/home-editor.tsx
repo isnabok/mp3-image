@@ -126,6 +126,21 @@ function formatBytes(bytes: number | null): string {
   return `${value.toFixed(fractionDigits)} ${units[unitIndex]}`;
 }
 
+function getExtensionFromMimeType(mimeType: string | null | undefined): string {
+  switch (mimeType) {
+    case "image/jpeg":
+      return "jpg";
+    case "image/png":
+      return "png";
+    case "image/webp":
+      return "webp";
+    case "image/gif":
+      return "gif";
+    default:
+      return "jpg";
+  }
+}
+
 async function extractErrorDetail(xhr: XMLHttpRequest, fallback: string): Promise<string> {
   try {
     const bodyText =
@@ -434,6 +449,33 @@ export default function HomeEditor({ headerPages, footerPages, children }: HomeE
     if (localCoverPreviewUrl) {
       URL.revokeObjectURL(localCoverPreviewUrl);
       setLocalCoverPreviewUrl(null);
+    }
+  };
+
+  const handleCoverDownload = async () => {
+    if (!previewUrl || !mp3File) {
+      return;
+    }
+
+    try {
+      const response = await fetch(previewUrl);
+      const blob = await response.blob();
+      const objectUrl = URL.createObjectURL(blob);
+      const extension = coverFile
+        ? getExtensionFromMimeType(coverFile.type)
+        : getExtensionFromMimeType(metadata?.cover_mime_type);
+      const baseName = mp3File.name.replace(/\.mp3$/i, "");
+      const filename = coverFile?.name || `${baseName}-cover.${extension}`;
+      const link = document.createElement("a");
+
+      link.href = objectUrl;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(objectUrl);
+    } catch {
+      setError(copy.errors.saveFailed);
     }
   };
 
@@ -1054,15 +1096,29 @@ export default function HomeEditor({ headerPages, footerPages, children }: HomeE
                     </div>
 
                     <div className="flex flex-col gap-4 lg:pt-3">
-                      <div className="grid gap-3 xl:grid-cols-[auto_minmax(0,1fr)_minmax(0,1fr)] xl:items-stretch">
-                        <button
-                          type="button"
-                          onClick={() => coverInputRef.current?.click()}
-                          className="inline-flex min-h-[78px] items-center justify-center gap-2 rounded-2xl border border-transparent bg-[linear-gradient(135deg,var(--accent),var(--accent-strong))] px-5 py-3.5 text-sm font-semibold text-[var(--accent-contrast)] shadow-[0_16px_32px_var(--accent-glow)] transition hover:translate-y-[-1px] hover:shadow-[0_20px_36px_var(--accent-glow)] xl:min-h-[86px] xl:self-stretch"
-                        >
-                          <CoverIcon />
-                          {copy.actions.selectCover}
-                        </button>
+                      <div className="grid gap-3 xl:grid-cols-[minmax(0,220px)_minmax(0,1fr)_minmax(0,1fr)] xl:items-stretch">
+                        <div className="flex flex-col gap-3">
+                          <button
+                            type="button"
+                            onClick={() => coverInputRef.current?.click()}
+                            className="inline-flex min-h-[78px] items-center justify-center gap-2 rounded-2xl border border-transparent bg-[linear-gradient(135deg,var(--accent),var(--accent-strong))] px-5 py-3.5 text-sm font-semibold text-[var(--accent-contrast)] shadow-[0_16px_32px_var(--accent-glow)] transition hover:translate-y-[-1px] hover:shadow-[0_20px_36px_var(--accent-glow)] xl:min-h-[86px] xl:self-stretch"
+                          >
+                            <CoverIcon />
+                            {copy.actions.selectCover}
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={() => {
+                              void handleCoverDownload();
+                            }}
+                            disabled={!previewUrl}
+                            className="inline-flex min-h-[54px] items-center justify-center gap-2 rounded-2xl border border-[var(--border)] bg-[var(--surface-soft)] px-5 py-3 text-sm font-medium text-[var(--foreground)] transition hover:border-[var(--accent)] hover:text-[var(--accent)] disabled:cursor-not-allowed disabled:opacity-50"
+                          >
+                            <DownloadIcon />
+                            {copy.actions.downloadCover}
+                          </button>
+                        </div>
 
                         <div className="flex min-h-[78px] flex-col justify-center rounded-[22px] border border-[var(--border)] bg-[var(--surface-soft)] p-4 xl:min-h-[86px]">
                           <p className="text-xs uppercase tracking-[0.2em] text-[var(--muted)]">
