@@ -1136,7 +1136,7 @@ export default function HomeEditor({ headerPages, footerPages, children }: HomeE
                               onClick={() => {
                                 void handleCoverDownload();
                               }}
-                              className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-2xl border border-[color:var(--accent)] bg-black/20 px-4 py-2 text-sm font-medium text-[var(--accent)] backdrop-blur-sm transition hover:bg-black/28"
+                              className="inline-flex min-h-[44px] cursor-pointer items-center justify-center gap-2 rounded-2xl border border-[color:var(--accent)] bg-black/20 px-4 py-2 text-sm font-medium text-[var(--accent)] backdrop-blur-sm transition hover:bg-black/28"
                             >
                               <DownloadIcon />
                               {copy.actions.downloadCover}
@@ -1144,8 +1144,8 @@ export default function HomeEditor({ headerPages, footerPages, children }: HomeE
                             <button
                               type="button"
                               onClick={handleCoverRemove}
-                              disabled={!coverFile}
-                              className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-2xl border border-[var(--danger)] bg-black/20 px-4 py-2 text-sm font-medium text-[var(--danger)] backdrop-blur-sm transition hover:bg-black/28 disabled:cursor-not-allowed disabled:opacity-45"
+                              disabled={!coverFile && !metadata?.has_cover}
+                              className="inline-flex min-h-[44px] cursor-pointer items-center justify-center gap-2 rounded-2xl border border-[var(--danger)] bg-black/20 px-4 py-2 text-sm font-medium text-[var(--danger)] backdrop-blur-sm transition hover:bg-black/28 disabled:cursor-not-allowed disabled:opacity-45"
                             >
                               <CloseIcon />
                               {copy.actions.removeCover}
