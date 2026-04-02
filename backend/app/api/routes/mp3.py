@@ -15,6 +15,10 @@ from app.services.id3_service import (
 router = APIRouter()
 
 
+def _to_bool(value: str | None) -> bool:
+    return (value or "").strip().lower() in {"1", "true", "yes", "on"}
+
+
 def require_api_token(x_api_key: str | None = Header(default=None)) -> None:
     if not settings.api_shared_token:
         raise HTTPException(
@@ -67,6 +71,7 @@ async def update_mp3_metadata(
     year: str | None = Form(default=None),
     track: str | None = Form(default=None),
     comment: str | None = Form(default=None),
+    remove_cover: str | None = Form(default=None),
     _: None = Depends(require_api_token),
 ) -> StreamingResponse:
     if mp3_file.content_type not in {"audio/mpeg", "audio/mp3", "application/octet-stream"}:
@@ -88,6 +93,7 @@ async def update_mp3_metadata(
             comment=comment,
             cover_bytes=cover_bytes,
             cover_mime_type=cover_image.content_type if cover_image else None,
+            remove_cover=_to_bool(remove_cover),
         )
     except InvalidMP3FileError as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc

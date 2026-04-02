@@ -145,6 +145,7 @@ def update_metadata(
     comment: str | None,
     cover_bytes: bytes | None,
     cover_mime_type: str | None,
+    remove_cover: bool = False,
 ) -> bytes:
     _validate_mp3(file_bytes)
     tags = _load_tags(file_bytes)
@@ -165,7 +166,9 @@ def update_metadata(
         if normalized_comment:
             tags.add(COMM(encoding=1, lang="eng", desc="", text=normalized_comment))
 
-    if normalized_cover_bytes:
+    if remove_cover:
+        tags.delall("APIC")
+    elif normalized_cover_bytes:
         tags.delall("APIC")
         tags.add(
             APIC(

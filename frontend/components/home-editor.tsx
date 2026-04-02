@@ -398,6 +398,7 @@ export default function HomeEditor({ headerPages, footerPages, children }: HomeE
   const [form, setForm] = useState<MetadataForm>(EMPTY_FORM);
   const [mp3File, setMp3File] = useState<File | null>(null);
   const [coverFile, setCoverFile] = useState<File | null>(null);
+  const [removeCoverRequested, setRemoveCoverRequested] = useState(false);
   const [metadata, setMetadata] = useState<MP3Metadata | null>(null);
   const [warnings, setWarnings] = useState<string[]>([]);
   const [status, setStatus] = useState(copy.status.idle);
@@ -417,7 +418,7 @@ export default function HomeEditor({ headerPages, footerPages, children }: HomeE
     };
   }, [localCoverPreviewUrl]);
 
-  const previewUrl = localCoverPreviewUrl ?? metadata?.cover_data_url ?? null;
+  const previewUrl = removeCoverRequested ? null : localCoverPreviewUrl ?? metadata?.cover_data_url ?? null;
   const hasLoadedFile = Boolean(mp3File && metadata);
   const shouldShowPreloadFeedback = !hasLoadedFile && (Boolean(mp3File) || readProgress.phase !== "idle" || Boolean(error));
   const hasPendingCoverChanges = Boolean(coverFile) && saveProgress.phase !== "completed";
@@ -428,10 +429,12 @@ export default function HomeEditor({ headerPages, footerPages, children }: HomeE
       ]
     : warnings;
   const warningTone = visibleWarnings.length === 0 ? "success" : hasPendingCoverChanges ? "warning" : "danger";
+  const statusTone = error || removeCoverRequested ? "danger" : "default";
 
   const resetEditor = () => {
     setMp3File(null);
     setCoverFile(null);
+    setRemoveCoverRequested(false);
     setMetadata(null);
     setWarnings([]);
     setForm(EMPTY_FORM);
@@ -480,14 +483,15 @@ export default function HomeEditor({ headerPages, footerPages, children }: HomeE
   };
 
   const handleCoverRemove = () => {
-    if (!coverFile) {
+    if (!coverFile && !metadata?.has_cover) {
       return;
     }
 
     resetCoverPreview();
     setCoverFile(null);
+    setRemoveCoverRequested(true);
     setError("");
-    setStatus(copy.status.loaded);
+    setStatus(copy.status.coverRemoved);
   };
 
   const handleFieldChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -504,6 +508,7 @@ export default function HomeEditor({ headerPages, footerPages, children }: HomeE
     setWarnings([]);
     setError("");
     setCoverFile(null);
+    setRemoveCoverRequested(false);
     setSaveProgress(EMPTY_PROGRESS);
     resetCoverPreview();
     setIsReading(true);
@@ -620,6 +625,7 @@ export default function HomeEditor({ headerPages, footerPages, children }: HomeE
     resetCoverPreview();
     const nextPreviewUrl = URL.createObjectURL(selectedFile);
     setCoverFile(selectedFile);
+    setRemoveCoverRequested(false);
     setLocalCoverPreviewUrl(nextPreviewUrl);
     setError("");
     trackEvent("cover_selected", {
@@ -657,6 +663,7 @@ export default function HomeEditor({ headerPages, footerPages, children }: HomeE
       payload.append("year", form.year);
       payload.append("track", form.track);
       payload.append("comment", form.comment);
+      payload.append("remove_cover", removeCoverRequested ? "true" : "false");
 
       if (coverFile) {
         payload.append("cover_image", coverFile);
@@ -723,6 +730,22 @@ export default function HomeEditor({ headerPages, footerPages, children }: HomeE
             : current,
         );
       }
+      if (removeCoverRequested) {
+        setWarnings(["Cover art is missing."]);
+        setMetadata((current) =>
+          current
+            ? {
+                ...current,
+                has_cover: false,
+                cover_mime_type: null,
+                cover_data_url: null,
+              }
+            : current,
+        );
+      }
+      setCoverFile(null);
+      setRemoveCoverRequested(false);
+      resetCoverPreview();
       setSaveProgress({
         phase: "completed",
         percent: 100,
@@ -1015,18 +1038,24 @@ export default function HomeEditor({ headerPages, footerPages, children }: HomeE
                   <div className="flex h-full items-center gap-4">
                     <div
                       className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl ${
-                        error
+                        statusTone === "danger"
                           ? "bg-[var(--danger-soft)] text-[var(--danger)]"
                           : "bg-[var(--accent-glow)] text-[var(--accent)]"
                       }`}
                     >
-                      {error ? <AlertIcon /> : <CheckIcon />}
+                      {statusTone === "danger" ? <AlertIcon /> : <CheckIcon />}
                     </div>
                     <div className="min-w-0 self-center">
                       <p className="text-xs uppercase tracking-[0.22em] text-[var(--muted)]">
                         {copy.status.panelTitle}
                       </p>
-                      <p className="mt-2 text-base font-medium leading-7 text-[var(--foreground)]">
+                      <p
+                        className={`mt-2 text-base font-medium leading-7 ${
+                          statusTone === "danger"
+                            ? "text-[var(--danger)]"
+                            : "text-[var(--foreground)]"
+                        }`}
+                      >
                         {status}
                       </p>
                       {mp3File ? (

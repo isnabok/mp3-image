@@ -64,6 +64,7 @@
     "loaded": "MP3 loaded. You can now edit tags and add cover image.",
     "loadFailed": "Could not load MP3 tags.",
     "coverSelected": "Cover image selected: {filename}",
+    "coverRemoved": "Cover image removed. Save to apply.",
     "saving": "Saving MP3 with updated tags and cover...",
     "saved": "Done. Your updated MP3 is downloading.",
     "saveFailed": "Could not save the updated MP3.",
