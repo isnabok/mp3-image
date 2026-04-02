@@ -8,6 +8,7 @@ import { cache } from "react";
 
 export type ContentFrontmatter = {
   title: string;
+  menuTitle?: string;
   description: string;
   slug: string;
   order?: number;
@@ -65,6 +66,7 @@ function isValidFrontmatter(data: unknown): data is ContentFrontmatter {
   const candidate = data as Record<string, unknown>;
   return (
     typeof candidate.title === "string" &&
+    (candidate.menuTitle === undefined || typeof candidate.menuTitle === "string") &&
     typeof candidate.description === "string" &&
     typeof candidate.slug === "string" &&
     (candidate.order === undefined || typeof candidate.order === "number") &&
@@ -106,6 +108,7 @@ function normalizeFrontmatter(data: unknown, filepath: string): ContentFrontmatt
 
   return {
     title: data.title.trim(),
+    menuTitle: data.menuTitle?.trim() || undefined,
     description: data.description.trim(),
     slug: data.slug.trim(),
     order: data.order,
@@ -237,7 +240,7 @@ export const getContentNavigationPages = cache(
     })
     .map((page) => ({
       slug: page.slug,
-      title: page.title,
+      title: page.menuTitle ?? page.title,
     }));
   },
 );
