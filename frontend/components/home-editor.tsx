@@ -479,6 +479,17 @@ export default function HomeEditor({ headerPages, footerPages, children }: HomeE
     }
   };
 
+  const handleCoverRemove = () => {
+    if (!coverFile) {
+      return;
+    }
+
+    resetCoverPreview();
+    setCoverFile(null);
+    setError("");
+    setStatus(copy.status.loaded);
+  };
+
   const handleFieldChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
     setForm((current) => ({
@@ -1080,14 +1091,38 @@ export default function HomeEditor({ headerPages, footerPages, children }: HomeE
                   </div>
 
                   <div className="mt-6 grid gap-6 lg:grid-cols-[360px_minmax(0,1fr)] lg:items-center">
-                    <div className="mx-auto flex aspect-square w-full max-w-[360px] items-center justify-center overflow-hidden rounded-[28px] border border-[var(--border)] bg-[var(--surface-soft)] lg:mx-0 lg:max-w-none">
+                    <div className="group relative mx-auto flex aspect-square w-full max-w-[360px] items-center justify-center overflow-hidden rounded-[28px] border border-[var(--border)] bg-[var(--surface-soft)] lg:mx-0 lg:max-w-none">
                       {previewUrl ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img
-                          src={previewUrl}
-                          alt={copy.cover.previewAlt}
-                          className="h-full w-full object-cover"
-                        />
+                        <>
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
+                            src={previewUrl}
+                            alt={copy.cover.previewAlt}
+                            className="h-full w-full object-cover"
+                          />
+                          <div className="pointer-events-none absolute inset-0 bg-black/10 opacity-0 transition-opacity duration-200 group-hover:opacity-100" />
+                          <div className="absolute inset-x-4 bottom-4 flex flex-col gap-2 opacity-0 transition-all duration-200 group-hover:translate-y-0 group-hover:opacity-100">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                void handleCoverDownload();
+                              }}
+                              className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-2xl border border-[color:var(--accent)] bg-black/20 px-4 py-2 text-sm font-medium text-[var(--accent)] backdrop-blur-sm transition hover:bg-black/28"
+                            >
+                              <DownloadIcon />
+                              {copy.actions.downloadCover}
+                            </button>
+                            <button
+                              type="button"
+                              onClick={handleCoverRemove}
+                              disabled={!coverFile}
+                              className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-2xl border border-[var(--danger)] bg-black/20 px-4 py-2 text-sm font-medium text-[var(--danger)] backdrop-blur-sm transition hover:bg-black/28 disabled:cursor-not-allowed disabled:opacity-45"
+                            >
+                              <CloseIcon />
+                              {copy.actions.removeCover}
+                            </button>
+                          </div>
+                        </>
                       ) : (
                         <div className="px-8 text-center text-sm leading-6 text-[var(--muted)]">
                           {copy.cover.empty}
@@ -1106,18 +1141,6 @@ export default function HomeEditor({ headerPages, footerPages, children }: HomeE
                             <CoverIcon />
                             {copy.actions.selectCover}
                           </button>
-
-                          <button
-                            type="button"
-                            onClick={() => {
-                              void handleCoverDownload();
-                            }}
-                            disabled={!previewUrl}
-                            className="inline-flex min-h-[54px] items-center justify-center gap-2 rounded-2xl border border-[var(--border)] bg-[var(--surface-soft)] px-5 py-3 text-sm font-medium text-[var(--foreground)] transition hover:border-[var(--accent)] hover:text-[var(--accent)] disabled:cursor-not-allowed disabled:opacity-50"
-                          >
-                            <DownloadIcon />
-                            {copy.actions.downloadCover}
-                          </button>
                         </div>
 
                         <div className="flex min-h-[78px] flex-col justify-center rounded-[22px] border border-[var(--border)] bg-[var(--surface-soft)] p-4 xl:min-h-[86px]">
@@ -1125,7 +1148,7 @@ export default function HomeEditor({ headerPages, footerPages, children }: HomeE
                             {copy.cover.mime}
                           </p>
                           <p className="mt-2 text-sm text-[var(--foreground)]">
-                            {metadata?.cover_mime_type ?? coverFile?.type ?? copy.cover.none}
+                            {coverFile?.type ?? metadata?.cover_mime_type ?? copy.cover.none}
                           </p>
                         </div>
                         <div className="flex min-h-[78px] flex-col justify-center rounded-[22px] border border-[var(--border)] bg-[var(--surface-soft)] p-4 xl:min-h-[86px]">

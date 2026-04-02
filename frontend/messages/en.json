@@ -16,6 +16,7 @@
     "removeMp3": "Remove file",
     "selectCover": "Choose new cover",
     "downloadCover": "Download cover",
+    "removeCover": "Remove cover",
     "save": "Save and download",
     "saving": "Saving...",
     "toggleTheme": "Toggle theme"
