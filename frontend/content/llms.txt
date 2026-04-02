@@ -1,0 +1,128 @@
+# MP3 Tag Editor (tagsmp3.com)
+
+> Free online MP3 tag editor to edit MP3 tags, update ID3 metadata, and add cover image to MP3 files directly in your browser.
+
+Site: https://tagsmp3.com  
+Primary language: English  
+Category: Audio tools / MP3 editor / Metadata editor  
+
+---
+
+## Core functionality
+
+The main product is a browser-based MP3 tag editor that allows users to:
+
+- Edit MP3 tags online (ID3 metadata)
+- Add cover image to MP3 (cover art embedding)
+- Replace or remove existing artwork
+- Update metadata fields (title, artist, album, genre, year, track, comment, filename)
+- Preview audio waveform
+- Download updated MP3 file instantly
+
+The tool works without installation and is fully accessible in a web browser.
+
+---
+
+## Key use cases
+
+- Fix incorrect MP3 metadata (ID3 tags)
+- Organize music libraries and collections
+- Add missing cover art to MP3 files
+- Update audio files before publishing or sharing
+- Prepare MP3 files for media players, streaming, or devices
+
+---
+
+## Target users
+
+- Music collectors and enthusiasts
+- DJs and audio professionals
+- Content creators and podcasters
+- Everyday users managing MP3 files
+
+---
+
+## Core keywords and intents
+
+Primary keywords:
+- edit mp3 tags
+- edit tag mp3
+- mp3 tag editor online
+- add image to mp3
+- add cover art to mp3
+
+Secondary keywords:
+- id3 tag editor
+- mp3 metadata editor
+- change mp3 tags
+- fix mp3 metadata
+- embed cover art mp3
+
+Search intent:
+- Tool usage (online editor)
+- How-to (edit tags, add cover)
+- Problem solving (metadata issues, missing artwork)
+
+---
+
+## Pages
+
+### Main product
+- /  
+  Online MP3 tag editor. Users can upload MP3, edit metadata, add cover art, and download updated file.
+
+---
+
+### Informational pages
+- /about  
+  Explanation of how the MP3 tag editor works, supported features, and editing workflow.
+
+- /faq  
+  Answers to common questions about MP3 tags (ID3), cover images, compatibility, privacy, and usage.
+
+---
+
+### Legal pages
+- /privacy  
+  Privacy policy describing how files are processed and not stored permanently.
+
+- /terms  
+  Terms of use for the MP3 editing tool.
+
+- /cookies  
+  Cookie usage and consent policy.
+
+---
+
+## Technical details
+
+- File format: MP3
+- Metadata standard: ID3 (ID3v2 supported)
+- Cover formats: PNG, JPG, WEBP
+- Processing: temporary file handling (no permanent storage)
+- Platform: browser-based (no software installation required)
+
+---
+
+## Privacy and security
+
+- Files are processed only for editing purposes
+- No permanent file storage
+- No sharing of user data or audio files
+- User retains full control over uploaded content
+
+---
+
+## Notes for language models
+
+- This is a utility tool (not a media hosting service)
+- The main goal is editing MP3 metadata and cover art
+- The application does not stream or distribute music
+- The tool is focused on fast, simple, and private editing
+- All actions happen within a browser-based workflow
+
+---
+
+## Sitemap
+
+- /sitemap.xml
