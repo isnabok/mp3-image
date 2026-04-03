@@ -20,13 +20,31 @@ type BatchMetadataForm = {
   comment: string;
 };
 
+type MP3Metadata = Omit<BatchMetadataForm, "outputFilename"> & {
+  filename: string;
+  has_cover: boolean;
+  cover_mime_type: string | null;
+  cover_data_url: string | null;
+};
+
+type MP3MetadataResponse = {
+  metadata: MP3Metadata;
+  warnings: string[];
+};
+
 type BatchItem = {
   id: string;
   file: File;
   form: BatchMetadataForm;
+  metadata: MP3Metadata | null;
+  warnings: string[];
+  error: string;
   coverFile: File | null;
   coverPreviewUrl: string | null;
+  removeCoverRequested: boolean;
   status: string;
+  isReading: boolean;
+  isSaving: boolean;
   isExpanded: boolean;
 };
 
@@ -45,6 +63,8 @@ const FIELD_KEYS = [
   "year",
   "track",
 ] as const;
+
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "/api/mp3";
 
 const batchCopy =
   copy.lang === "ru"
@@ -139,6 +159,43 @@ function formatBytes(bytes: number | null): string {
   return `${value.toFixed(fractionDigits)} ${units[unitIndex]}`;
 }
 
+function getFilenameFromDisposition(header: string | null): string | null {
+  if (!header) {
+    return null;
+  }
+
+  const utf8Match = header.match(/filename\*=UTF-8''([^;]+)/i);
+  if (utf8Match?.[1]) {
+    return decodeURIComponent(utf8Match[1]);
+  }
+
+  const plainMatch = header.match(/filename="?([^"]+)"?/i);
+  return plainMatch?.[1] ?? null;
+}
+
+function getErrorMessage(error: unknown): string {
+  if (error instanceof Error) {
+    return error.message;
+  }
+
+  return copy.errors.unknown;
+}
+
+function getExtensionFromMimeType(mimeType: string | null | undefined): string {
+  switch (mimeType) {
+    case "image/jpeg":
+      return "jpg";
+    case "image/png":
+      return "png";
+    case "image/webp":
+      return "webp";
+    case "image/gif":
+      return "gif";
+    default:
+      return "jpg";
+  }
+}
+
 function createInitialForm(file: File): BatchMetadataForm {
   const baseName = getBaseName(file.name);
 
@@ -151,6 +208,24 @@ function createInitialForm(file: File): BatchMetadataForm {
     year: "",
     track: "",
     comment: "",
+  };
+}
+
+function createBatchItem(file: File, isExpanded: boolean): BatchItem {
+  return {
+    id: `${file.name}-${file.lastModified}-${file.size}-${crypto.randomUUID()}`,
+    file,
+    form: createInitialForm(file),
+    metadata: null,
+    warnings: [],
+    error: "",
+    coverFile: null,
+    coverPreviewUrl: null,
+    removeCoverRequested: false,
+    status: formatMessage(copy.status.reading, { filename: file.name }),
+    isReading: true,
+    isSaving: false,
+    isExpanded,
   };
 }
 
@@ -279,6 +354,52 @@ export function BatchEditor({ headerPages, footerPages }: BatchEditorProps) {
     };
   }, []);
 
+  const readItemMetadata = async (itemId: string, file: File) => {
+    const payload = new FormData();
+    payload.append("mp3_file", file);
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/read`, {
+        method: "POST",
+        body: payload,
+      });
+
+      const data = (await response.json()) as MP3MetadataResponse | { detail?: string };
+      if (!response.ok) {
+        throw new Error((data as { detail?: string }).detail ?? copy.status.loadFailed);
+      }
+
+      const parsed = data as MP3MetadataResponse;
+      updateItem(itemId, (item) => ({
+        ...item,
+        metadata: parsed.metadata,
+        warnings: parsed.warnings,
+        error: "",
+        status: copy.status.loaded,
+        isReading: false,
+        form: {
+          outputFilename: parsed.metadata.filename ?? createInitialForm(file).outputFilename,
+          title: parsed.metadata.title ?? "",
+          artist: parsed.metadata.artist ?? "",
+          album: parsed.metadata.album ?? "",
+          genre: parsed.metadata.genre ?? "",
+          year: parsed.metadata.year ?? "",
+          track: parsed.metadata.track ?? "",
+          comment: parsed.metadata.comment ?? "",
+        },
+      }));
+    } catch (error) {
+      updateItem(itemId, (item) => ({
+        ...item,
+        metadata: null,
+        warnings: [],
+        error: getErrorMessage(error),
+        status: copy.status.loadFailed,
+        isReading: false,
+      }));
+    }
+  };
+
   const appendFiles = (fileList: FileList | File[]) => {
     const nextFiles = Array.from(fileList).filter(
       (file) => file.name.toLowerCase().endsWith(".mp3") || file.type === "audio/mpeg",
@@ -288,21 +409,12 @@ export function BatchEditor({ headerPages, footerPages }: BatchEditorProps) {
       return;
     }
 
-    setItems((current) => {
-      const shouldAutoExpand = current.length === 0;
+    const shouldAutoExpand = itemsRef.current.length === 0;
+    const nextItems = nextFiles.map((file, index) => createBatchItem(file, shouldAutoExpand && index === 0));
 
-      return [
-        ...current,
-        ...nextFiles.map((file, index) => ({
-          id: `${file.name}-${file.lastModified}-${file.size}-${crypto.randomUUID()}`,
-          file,
-          form: createInitialForm(file),
-          coverFile: null,
-          coverPreviewUrl: null,
-          status: batchCopy.readyStatus,
-          isExpanded: shouldAutoExpand && index === 0,
-        })),
-      ];
+    setItems((current) => [...current, ...nextItems]);
+    nextItems.forEach((item) => {
+      void readItemMetadata(item.id, item.file);
     });
   };
 
@@ -394,7 +506,9 @@ export function BatchEditor({ headerPages, footerPages }: BatchEditorProps) {
         ...item,
         coverFile: file,
         coverPreviewUrl: URL.createObjectURL(file),
-        status: batchCopy.coverLocalOnly,
+        removeCoverRequested: false,
+        error: "",
+        status: formatMessage(copy.status.coverSelected, { filename: file.name }),
       };
     });
   };
@@ -409,26 +523,115 @@ export function BatchEditor({ headerPages, footerPages }: BatchEditorProps) {
         ...item,
         coverFile: null,
         coverPreviewUrl: null,
-        status: batchCopy.coverRemoved,
+        removeCoverRequested: true,
+        error: "",
+        status: copy.status.coverRemoved,
       };
     });
   };
 
-  const handleMockDownload = async (item: BatchItem) => {
-    const objectUrl = URL.createObjectURL(item.file);
-    const link = document.createElement("a");
-
-    link.href = objectUrl;
-    link.download = item.form.outputFilename.trim() || item.file.name;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(objectUrl);
-
+  const handleSave = async (item: BatchItem) => {
     updateItem(item.id, (current) => ({
       ...current,
-      status: batchCopy.mockSaved,
+      isSaving: true,
+      error: "",
+      status: copy.status.saving,
     }));
+
+    try {
+      const payload = new FormData();
+      payload.append("mp3_file", item.file);
+      payload.append("output_filename", item.form.outputFilename);
+      payload.append("title", item.form.title);
+      payload.append("artist", item.form.artist);
+      payload.append("album", item.form.album);
+      payload.append("genre", item.form.genre);
+      payload.append("year", item.form.year);
+      payload.append("track", item.form.track);
+      payload.append("comment", item.form.comment);
+      payload.append("remove_cover", item.removeCoverRequested ? "true" : "false");
+
+      if (item.coverFile) {
+        payload.append("cover_image", item.coverFile);
+      }
+
+      const response = await fetch(`${API_BASE_URL}/update`, {
+        method: "POST",
+        body: payload,
+      });
+
+      if (!response.ok) {
+        const data = (await response.json().catch(() => ({}))) as { detail?: string };
+        throw new Error(data.detail ?? copy.status.saveFailed);
+      }
+
+      const blob = await response.blob();
+      const downloadFilename =
+        getFilenameFromDisposition(response.headers.get("content-disposition")) ??
+        item.form.outputFilename.trim() ??
+        item.file.name;
+
+      const objectUrl = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = objectUrl;
+      link.download = downloadFilename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(objectUrl);
+
+      const nextFile = new File([blob], downloadFilename, {
+        type: "audio/mpeg",
+        lastModified: Date.now(),
+      });
+
+      updateItem(item.id, (current) => ({
+        ...current,
+        file: nextFile,
+        form: {
+          ...current.form,
+          outputFilename: downloadFilename,
+        },
+        metadata: current.metadata
+          ? {
+              ...current.metadata,
+              filename: downloadFilename,
+              title: current.form.title,
+              artist: current.form.artist,
+              album: current.form.album,
+              genre: current.form.genre,
+              year: current.form.year,
+              track: current.form.track,
+              comment: current.form.comment,
+              has_cover: current.removeCoverRequested ? false : current.coverFile ? true : current.metadata.has_cover,
+              cover_mime_type: current.removeCoverRequested
+                ? null
+                : current.coverFile
+                  ? current.coverFile.type
+                  : current.metadata.cover_mime_type,
+              cover_data_url: current.removeCoverRequested
+                ? null
+                : current.coverPreviewUrl ?? current.metadata.cover_data_url,
+            }
+          : current.metadata,
+        warnings: current.removeCoverRequested
+          ? ["Cover art is missing."]
+          : current.coverFile
+            ? current.warnings.filter((warning) => warning.toLowerCase().trim() !== "cover art is missing.")
+            : current.warnings,
+        coverFile: null,
+        removeCoverRequested: false,
+        status: copy.status.saved,
+        isSaving: false,
+      }));
+    } catch (error) {
+      updateItem(item.id, (current) => ({
+        ...current,
+        error: getErrorMessage(error),
+        status: copy.status.saveFailed,
+        isSaving: false,
+      }));
+    }
   };
 
   return (
@@ -589,8 +792,28 @@ export function BatchEditor({ headerPages, footerPages }: BatchEditorProps) {
             <div className="space-y-5">
               {items.length > 0
                 ? items.map((item, index) => {
-                    const coverMimeType = item.coverFile?.type ?? copy.cover.none;
+                    const previewUrl = item.removeCoverRequested
+                      ? null
+                      : item.coverPreviewUrl ?? item.metadata?.cover_data_url ?? null;
+                    const coverMimeType =
+                      item.coverFile?.type ?? item.metadata?.cover_mime_type ?? copy.cover.none;
                     const coverName = item.coverFile?.name ?? copy.cover.notSelected;
+                    const visibleWarnings =
+                      item.coverFile && !item.removeCoverRequested
+                        ? [
+                            ...item.warnings.filter(
+                              (warning) => warning.toLowerCase().trim() !== "cover art is missing.",
+                            ),
+                            copy.warnings.coverPending,
+                          ]
+                        : item.warnings;
+                    const statusTone = item.error || item.removeCoverRequested ? "danger" : "default";
+                    const warningTone =
+                      visibleWarnings.length === 0
+                        ? "success"
+                        : item.coverFile && !item.removeCoverRequested
+                          ? "warning"
+                          : "danger";
 
                     return (
                       <SectionCard key={item.id} className="p-5 md:p-6">
@@ -641,33 +864,79 @@ export function BatchEditor({ headerPages, footerPages }: BatchEditorProps) {
                           <div className="mt-6 space-y-6">
                             <div className="grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
                               <div className="flex items-center gap-4 rounded-[24px] border border-[var(--border)] bg-[var(--surface-soft)] p-5">
-                                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[var(--accent-glow)] text-[var(--accent)]">
-                                  <TagsIcon />
+                                <div
+                                  className={joinClasses(
+                                    "flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl",
+                                    statusTone === "danger"
+                                      ? "bg-[var(--danger-soft)] text-[var(--danger)]"
+                                      : "bg-[var(--accent-glow)] text-[var(--accent)]",
+                                  )}
+                                >
+                                  {statusTone === "danger" ? <CloseIcon /> : <TagsIcon />}
                                 </div>
                                 <div className="min-w-0">
                                   <p className="text-xs uppercase tracking-[0.22em] text-[var(--muted)]">
                                     {copy.status.panelTitle}
                                   </p>
-                                  <p className="mt-2 text-sm font-medium leading-6 text-[var(--foreground)]">
+                                  <p
+                                    className={joinClasses(
+                                      "mt-2 text-sm font-medium leading-6",
+                                      statusTone === "danger"
+                                        ? "text-[var(--danger)]"
+                                        : "text-[var(--foreground)]",
+                                    )}
+                                  >
                                     {item.status}
                                   </p>
                                   <p className="mt-2 text-sm text-[var(--muted)]">
                                     {formatMessage(batchCopy.currentFile, { filename: item.file.name })}
                                   </p>
+                                  {item.error ? (
+                                    <p className="mt-2 text-sm text-[var(--danger)]">{item.error}</p>
+                                  ) : null}
                                 </div>
                               </div>
 
                               <div className="flex items-center gap-4 rounded-[24px] border border-[var(--border)] bg-[var(--surface-soft)] p-5">
-                                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[var(--warning-soft)] text-[var(--warning)]">
+                                <div
+                                  className={joinClasses(
+                                    "flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl",
+                                    warningTone === "danger"
+                                      ? "bg-[var(--danger-soft)] text-[var(--danger)]"
+                                      : warningTone === "warning"
+                                        ? "bg-[var(--warning-soft)] text-[var(--warning)]"
+                                        : "bg-[var(--success-soft)] text-[var(--success)]",
+                                  )}
+                                >
                                   <CoverIcon />
                                 </div>
                                 <div className="min-w-0">
                                   <p className="text-xs uppercase tracking-[0.22em] text-[var(--muted)]">
                                     {copy.warnings.panelTitle}
                                   </p>
-                                  <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
-                                    {item.coverFile ? batchCopy.coverLocalOnly : batchCopy.prototypeStatus}
-                                  </p>
+                                  {visibleWarnings.length > 0 ? (
+                                    <div className="mt-2 space-y-2">
+                                      {visibleWarnings.map((warning) => (
+                                        <p
+                                          key={warning}
+                                          className={joinClasses(
+                                            "text-sm leading-6",
+                                            warningTone === "warning"
+                                              ? "text-[var(--warning)]"
+                                              : warningTone === "danger"
+                                                ? "text-[var(--muted)]"
+                                                : "text-[var(--muted)]",
+                                          )}
+                                        >
+                                          {warning}
+                                        </p>
+                                      ))}
+                                    </div>
+                                  ) : (
+                                    <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
+                                      {copy.warnings.empty}
+                                    </p>
+                                  )}
                                 </div>
                               </div>
                             </div>
@@ -675,11 +944,11 @@ export function BatchEditor({ headerPages, footerPages }: BatchEditorProps) {
                             <div className="grid gap-6 lg:grid-cols-[360px_minmax(0,1fr)] lg:items-start">
                               <div className="space-y-4">
                                 <div className="group relative mx-auto flex aspect-square w-full max-w-[360px] items-center justify-center overflow-hidden rounded-[28px] border border-[var(--border)] bg-[var(--surface-soft)] lg:mx-0 lg:max-w-none">
-                                  {item.coverPreviewUrl ? (
+                                  {previewUrl ? (
                                     <>
                                       {/* eslint-disable-next-line @next/next/no-img-element */}
                                       <img
-                                        src={item.coverPreviewUrl}
+                                        src={previewUrl}
                                         alt={copy.cover.previewAlt}
                                         className="h-full w-full object-cover"
                                       />
@@ -809,17 +1078,18 @@ export function BatchEditor({ headerPages, footerPages }: BatchEditorProps) {
 
                             <div className="flex flex-col gap-3 rounded-[24px] border border-[var(--border)] bg-[var(--surface-soft)] p-5 sm:flex-row sm:items-center sm:justify-between">
                               <p className="text-sm leading-6 text-[var(--muted)]">
-                                {batchCopy.prototypeStatus}
+                                {item.isReading ? copy.progress.processingMetadata : batchCopy.prototypeStatus}
                               </p>
                               <button
                                 type="button"
                                 onClick={() => {
-                                  void handleMockDownload(item);
+                                  void handleSave(item);
                                 }}
-                                className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[linear-gradient(135deg,var(--accent),var(--accent-strong))] px-6 py-3.5 text-sm font-semibold text-[var(--accent-contrast)] shadow-[0_16px_32px_var(--accent-glow)] transition hover:translate-y-[-1px] hover:shadow-[0_20px_36px_var(--accent-glow)]"
+                                disabled={item.isReading || item.isSaving || !item.metadata}
+                                className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[linear-gradient(135deg,var(--accent),var(--accent-strong))] px-6 py-3.5 text-sm font-semibold text-[var(--accent-contrast)] shadow-[0_16px_32px_var(--accent-glow)] transition hover:translate-y-[-1px] hover:shadow-[0_20px_36px_var(--accent-glow)] disabled:cursor-not-allowed disabled:opacity-60"
                               >
                                 <DownloadIcon />
-                                {copy.actions.save}
+                                {item.isSaving ? copy.actions.saving : copy.actions.save}
                               </button>
                             </div>
                           </div>
