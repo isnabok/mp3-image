@@ -1,4 +1,4 @@
-import type { ContentPage, HomeContent } from "@/lib/content";
+import type { ContentPage, HomeContent, BatchContent } from "@/lib/content";
 import { buildAbsoluteUrl, siteConfig } from "@/lib/site";
 
 type JsonLd = Record<string, unknown>;
@@ -112,6 +112,42 @@ export function getHomeFaqStructuredData(home: HomeContent): JsonLd | null {
     "@context": "https://schema.org",
     "@type": "FAQPage",
     mainEntity: home.faq.map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: item.answer,
+      },
+    })),
+  };
+}
+
+export function getBatchPageStructuredData(batch: BatchContent): JsonLd {
+  return {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    name: batch.title,
+    description: batch.description,
+    url: batch.canonical ?? buildAbsoluteUrl("/batch"),
+    inLanguage: siteConfig.locale,
+    isPartOf: {
+      "@type": "WebSite",
+      name: siteConfig.name,
+      url: siteConfig.siteUrl,
+    },
+    about: batch.section,
+  };
+}
+
+export function getBatchFaqStructuredData(batch: BatchContent): JsonLd | null {
+  if (!batch.faq?.length) {
+    return null;
+  }
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: batch.faq.map((item) => ({
       "@type": "Question",
       name: item.question,
       acceptedAnswer: {

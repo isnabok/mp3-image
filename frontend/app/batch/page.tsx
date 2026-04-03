@@ -1,18 +1,66 @@
 import type { Metadata } from "next";
+import { evaluate } from "@mdx-js/mdx";
+import * as runtime from "react/jsx-runtime";
 
 import { BatchEditor } from "@/components/batch-editor";
 import { HomeContentSection } from "@/components/home-content-section";
-import { getContentNavigationPages } from "@/lib/content";
+import { getBatchContent, getContentNavigationPages } from "@/lib/content";
+import { buildAbsoluteUrl, siteConfig } from "@/lib/site";
+import {
+  getBatchFaqStructuredData,
+  getBatchPageStructuredData,
+} from "@/lib/structured-data";
+import { useMDXComponents } from "@/mdx-components";
 
-export const metadata: Metadata = {
-  title: "Batch MP3 Editor",
-  description:
-    "Upload multiple MP3 files, edit each track in its own expandable card, and save updated files one by one.",
-  robots: {
-    index: true,
-    follow: true,
-  },
-};
+async function renderMdx(source: string) {
+  const module = await evaluate(source, {
+    ...runtime,
+    useMDXComponents,
+  });
+
+  const Content = module.default;
+  return <Content />;
+}
+
+export async function generateMetadata(): Promise<Metadata> {
+  const batchContent = await getBatchContent();
+  const pageUrl = batchContent.canonical ?? buildAbsoluteUrl("/batch");
+
+  return {
+    title: batchContent.title,
+    description: batchContent.description,
+    keywords: batchContent.keywords,
+    alternates: {
+      canonical: pageUrl,
+    },
+    openGraph: {
+      type: "website",
+      locale: siteConfig.locale,
+      url: pageUrl,
+      siteName: siteConfig.name,
+      title: batchContent.title,
+      description: batchContent.description,
+      images: [
+        {
+          url: buildAbsoluteUrl(siteConfig.socialImagePath),
+          width: 1200,
+          height: 630,
+          alt: batchContent.title,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: batchContent.title,
+      description: batchContent.description,
+      images: [buildAbsoluteUrl(siteConfig.twitterImagePath)],
+    },
+    robots: {
+      index: true,
+      follow: true,
+    },
+  };
+}
 
 export default async function BatchPage() {
   const headerPages = [
@@ -23,36 +71,30 @@ export default async function BatchPage() {
     ...(await getContentNavigationPages("header")).filter((page) => page.slug !== "batch"),
   ];
   const footerPages = await getContentNavigationPages("footer");
+  const batchContent = await getBatchContent();
+  const content = await renderMdx(batchContent.body);
+  const pageStructuredData = getBatchPageStructuredData(batchContent);
+  const faqStructuredData = getBatchFaqStructuredData(batchContent);
 
   return (
     <BatchEditor headerPages={headerPages} footerPages={footerPages}>
-      <HomeContentSection
-        title="Why Use Batch MP3 Editor"
-        description="Batch mode helps when you want to process several MP3 files in one session, keep each track in its own card, and work through metadata updates without leaving the page."
-      >
-        <p className="text-[0.8rem] leading-5 text-[var(--muted)]">
-          Use the batch editor to upload multiple MP3 files at once, inspect the queue, and open only
-          the cards you want to edit right now. Each file keeps its own metadata form, cover controls,
-          player, and save action, so the workflow stays clear even with a larger set of tracks.
-        </p>
-        <h2 className="mt-6 text-[1.2rem] font-semibold tracking-[-0.03em] text-[var(--foreground)] md:text-[1.4rem]">
-          What Batch Mode Does
-        </h2>
-        <ul className="list-disc space-y-1 pl-6 text-[0.8rem] leading-5 text-[var(--muted)]">
-          <li>load several MP3 files into one queue</li>
-          <li>open each track in its own expandable editing card</li>
-          <li>update title, artist, album, year, genre, track, comment, and filename independently</li>
-          <li>replace or remove cover art per file</li>
-          <li>save and download each updated MP3 one by one</li>
-        </ul>
-        <h2 className="mt-6 text-[1.2rem] font-semibold tracking-[-0.03em] text-[var(--foreground)] md:text-[1.4rem]">
-          Why This Flow Helps
-        </h2>
-        <p className="text-[0.8rem] leading-5 text-[var(--muted)]">
-          The single-file editor is still the fastest path for quick changes, while batch mode is better
-          when you are reviewing several files in one pass. It keeps the editing state separated by card,
-          which makes it easier to work carefully through a queue without mixing files together.
-        </p>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(pageStructuredData),
+        }}
+      />
+      {faqStructuredData ? (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(faqStructuredData),
+          }}
+        />
+      ) : null}
+
+      <HomeContentSection title={batchContent.title} description={batchContent.description}>
+        {content}
       </HomeContentSection>
     </BatchEditor>
   );

@@ -31,9 +31,10 @@ export type ContentPage = ContentFrontmatter & {
   filepath: string;
 };
 
-export type HomeContentFrontmatter = {
+export type StaticContentFrontmatter = {
   title: string;
   description: string;
+  canonical?: string;
   keywords?: string[];
   section?: string;
   schemaType?: "WebPage" | "FAQPage";
@@ -43,7 +44,12 @@ export type HomeContentFrontmatter = {
   }>;
 };
 
-export type HomeContent = HomeContentFrontmatter & {
+export type HomeContent = StaticContentFrontmatter & {
+  body: string;
+  filepath: string;
+};
+
+export type BatchContent = StaticContentFrontmatter & {
   body: string;
   filepath: string;
 };
@@ -57,6 +63,7 @@ export type ContentNavigationPosition = "header" | "footer";
 
 const CONTENT_DIR = path.join(process.cwd(), "content", "pages");
 const HOME_CONTENT_FILE = path.join(process.cwd(), "content", "home.mdx");
+const BATCH_CONTENT_FILE = path.join(process.cwd(), "content", "batch.mdx");
 
 function isValidFrontmatter(data: unknown): data is ContentFrontmatter {
   if (!data || typeof data !== "object") {
@@ -128,7 +135,7 @@ function normalizeFrontmatter(data: unknown, filepath: string): ContentFrontmatt
   };
 }
 
-function isValidHomeFrontmatter(data: unknown): data is HomeContentFrontmatter {
+function isValidStaticFrontmatter(data: unknown): data is StaticContentFrontmatter {
   if (!data || typeof data !== "object") {
     return false;
   }
@@ -137,6 +144,7 @@ function isValidHomeFrontmatter(data: unknown): data is HomeContentFrontmatter {
   return (
     typeof candidate.title === "string" &&
     typeof candidate.description === "string" &&
+    (candidate.canonical === undefined || typeof candidate.canonical === "string") &&
     (candidate.keywords === undefined ||
       (Array.isArray(candidate.keywords) &&
         candidate.keywords.every((keyword) => typeof keyword === "string"))) &&
@@ -156,8 +164,8 @@ function isValidHomeFrontmatter(data: unknown): data is HomeContentFrontmatter {
   );
 }
 
-function normalizeHomeFrontmatter(data: unknown, filepath: string): HomeContentFrontmatter {
-  if (!isValidHomeFrontmatter(data)) {
+function normalizeStaticFrontmatter(data: unknown, filepath: string): StaticContentFrontmatter {
+  if (!isValidStaticFrontmatter(data)) {
     throw new Error(
       `Invalid frontmatter in "${filepath}". Required fields: title and description.`,
     );
@@ -166,6 +174,7 @@ function normalizeHomeFrontmatter(data: unknown, filepath: string): HomeContentF
   return {
     title: data.title.trim(),
     description: data.description.trim(),
+    canonical: data.canonical?.trim() || undefined,
     keywords: data.keywords?.map((keyword) => keyword.trim()).filter(Boolean) ?? undefined,
     section: data.section?.trim() || undefined,
     schemaType: data.schemaType ?? "WebPage",
@@ -189,10 +198,10 @@ async function readContentFile(filepath: string): Promise<ContentPage> {
   };
 }
 
-async function readHomeContentFile(filepath: string): Promise<HomeContent> {
+async function readStaticContentFile(filepath: string): Promise<HomeContent> {
   const fileContents = await fs.readFile(filepath, "utf8");
   const { content, data } = matter(fileContents);
-  const frontmatter = normalizeHomeFrontmatter(data, filepath);
+  const frontmatter = normalizeStaticFrontmatter(data, filepath);
 
   return {
     ...frontmatter,
@@ -246,5 +255,9 @@ export const getContentNavigationPages = cache(
 );
 
 export const getHomeContent = cache(async (): Promise<HomeContent> => {
-  return readHomeContentFile(HOME_CONTENT_FILE);
+  return readStaticContentFile(HOME_CONTENT_FILE);
+});
+
+export const getBatchContent = cache(async (): Promise<BatchContent> => {
+  return readStaticContentFile(BATCH_CONTENT_FILE);
 });
