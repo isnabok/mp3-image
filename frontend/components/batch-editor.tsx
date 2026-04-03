@@ -51,6 +51,7 @@ type BatchItem = {
 type BatchEditorProps = {
   headerPages: ContentLinkItem[];
   footerPages: ContentLinkItem[];
+  children?: ReactNode;
 };
 
 const copy = siteMessages;
@@ -344,7 +345,7 @@ function ChevronIcon({ open }: { open: boolean }) {
   );
 }
 
-export function BatchEditor({ headerPages, footerPages }: BatchEditorProps) {
+export function BatchEditor({ headerPages, footerPages, children }: BatchEditorProps) {
   const uploadInputRef = useRef<HTMLInputElement>(null);
   const itemsRef = useRef<BatchItem[]>([]);
   const [items, setItems] = useState<BatchItem[]>([]);
@@ -697,22 +698,6 @@ export function BatchEditor({ headerPages, footerPages }: BatchEditorProps) {
                 </span>
               </div>
             </div>
-
-            <SectionCard className="border-[var(--warning-soft)]/80 bg-[linear-gradient(180deg,color-mix(in_oklab,var(--warning-soft)_58%,transparent),var(--surface))]">
-              <div className="flex items-start gap-4">
-                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[var(--warning-soft)] text-[var(--warning)]">
-                  <TagsIcon />
-                </div>
-                <div className="min-w-0">
-                  <p className="text-xs uppercase tracking-[0.22em] text-[var(--muted)]">
-                    {batchCopy.prototypeTitle}
-                  </p>
-                  <p className="mt-2 text-sm leading-6 text-[var(--foreground)]">
-                    {batchCopy.prototypeDescription}
-                  </p>
-                </div>
-              </div>
-            </SectionCard>
 
             <input
               ref={uploadInputRef}
@@ -1127,6 +1112,8 @@ export function BatchEditor({ headerPages, footerPages }: BatchEditorProps) {
           </div>
         </div>
       </section>
+
+      {children}
 
       <footer className="border-t border-[var(--border)] bg-[var(--surface)]/50 py-6">
         <div className="container-shell flex flex-col items-center justify-between gap-4 md:flex-row">

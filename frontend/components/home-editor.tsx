@@ -824,6 +824,14 @@ export default function HomeEditor({ headerPages, footerPages, children }: HomeE
               <p className="mx-auto mt-4 max-w-2xl text-sm leading-7 text-[var(--muted)] md:text-base">
                 {copy.hero.description}
               </p>
+              <div className="mt-5 flex flex-col items-center justify-center gap-3 sm:flex-row">
+                <Link
+                  href="/batch"
+                  className="inline-flex items-center justify-center rounded-full border border-[var(--border)] bg-[var(--surface-soft)] px-4 py-2 text-[0.82rem] font-medium text-[var(--foreground)] transition hover:border-[var(--accent)] hover:text-[var(--accent)]"
+                >
+                  Batch editor
+                </Link>
+              </div>
             </div>
           ) : null}
 

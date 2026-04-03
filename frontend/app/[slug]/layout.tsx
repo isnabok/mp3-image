@@ -11,7 +11,13 @@ export default async function ContentLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const headerPages = await getContentNavigationPages("header");
+  const headerPages = [
+    {
+      slug: "batch",
+      title: "Batch",
+    },
+    ...(await getContentNavigationPages("header")).filter((page) => page.slug !== "batch"),
+  ];
   const footerPages = await getContentNavigationPages("footer");
 
   return (

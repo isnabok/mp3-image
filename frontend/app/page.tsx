@@ -21,7 +21,13 @@ async function renderMdx(source: string) {
 }
 
 export default async function HomePage() {
-  const headerPages = await getContentNavigationPages("header");
+  const headerPages = [
+    {
+      slug: "batch",
+      title: "Batch",
+    },
+    ...(await getContentNavigationPages("header")).filter((page) => page.slug !== "batch"),
+  ];
   const footerPages = await getContentNavigationPages("footer");
   const homeContent = await getHomeContent();
   const content = await renderMdx(homeContent.body);
