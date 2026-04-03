@@ -248,6 +248,16 @@ function SectionCard({
   );
 }
 
+function LoadingBar() {
+  return (
+    <div className="mt-3 h-2.5 overflow-hidden rounded-full bg-[var(--surface-soft)]">
+      <div className="relative h-full w-[42%] animate-pulse rounded-full bg-[linear-gradient(90deg,var(--accent),var(--accent-strong))]">
+        <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.24),transparent)] opacity-70" />
+      </div>
+    </div>
+  );
+}
+
 function IconWrap({ children }: { children: ReactNode }) {
   return (
     <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--accent-glow)] text-[var(--accent)]">
@@ -409,8 +419,7 @@ export function BatchEditor({ headerPages, footerPages }: BatchEditorProps) {
       return;
     }
 
-    const shouldAutoExpand = itemsRef.current.length === 0;
-    const nextItems = nextFiles.map((file, index) => createBatchItem(file, shouldAutoExpand && index === 0));
+    const nextItems = nextFiles.map((file) => createBatchItem(file, false));
 
     setItems((current) => [...current, ...nextItems]);
     nextItems.forEach((item) => {
@@ -705,46 +714,48 @@ export function BatchEditor({ headerPages, footerPages }: BatchEditorProps) {
               </div>
             </SectionCard>
 
-            <SectionCard>
-              <input
-                ref={uploadInputRef}
-                type="file"
-                accept=".mp3,audio/mpeg"
-                multiple
-                className="hidden"
-                onChange={handleUploadChange}
-              />
+            <input
+              ref={uploadInputRef}
+              type="file"
+              accept=".mp3,audio/mpeg"
+              multiple
+              className="hidden"
+              onChange={handleUploadChange}
+            />
 
-              <button
-                type="button"
-                onClick={() => uploadInputRef.current?.click()}
-                onDragOver={handleDragOver}
-                onDragLeave={handleDragLeave}
-                onDrop={handleDrop}
-                className={joinClasses(
-                  "upload-dropzone relative w-full overflow-hidden rounded-[30px] border border-[var(--border)] bg-[radial-gradient(circle_at_top_left,color-mix(in_oklab,var(--accent-glow)_45%,transparent),transparent_34%),var(--surface)] px-6 py-10 text-left transition",
-                  isDragging && "is-dragging",
-                )}
-                data-dragging={isDragging}
-              >
-                <div className="relative z-[1] flex min-h-[300px] flex-col items-center justify-center text-center">
-                  <div className="flex h-[88px] w-[88px] items-center justify-center rounded-[24px] border border-[color:var(--accent-glow)] bg-[var(--accent-glow)] text-[var(--accent)] shadow-[0_18px_40px_var(--accent-glow)]">
-                    <UploadIcon className="h-9 w-9" />
+            {items.length === 0 ? (
+              <SectionCard>
+                <button
+                  type="button"
+                  onClick={() => uploadInputRef.current?.click()}
+                  onDragOver={handleDragOver}
+                  onDragLeave={handleDragLeave}
+                  onDrop={handleDrop}
+                  className={joinClasses(
+                    "upload-dropzone relative w-full overflow-hidden rounded-[30px] border border-[var(--border)] bg-[radial-gradient(circle_at_top_left,color-mix(in_oklab,var(--accent-glow)_45%,transparent),transparent_34%),var(--surface)] px-6 py-10 text-left transition",
+                    isDragging && "is-dragging",
+                  )}
+                  data-dragging={isDragging}
+                >
+                  <div className="relative z-[1] flex min-h-[300px] flex-col items-center justify-center text-center">
+                    <div className="flex h-[88px] w-[88px] items-center justify-center rounded-[24px] border border-[color:var(--accent-glow)] bg-[var(--accent-glow)] text-[var(--accent)] shadow-[0_18px_40px_var(--accent-glow)]">
+                      <UploadIcon className="h-9 w-9" />
+                    </div>
+
+                    <h2 className="mt-6 text-[1.55rem] font-semibold tracking-[-0.03em] text-[var(--foreground)] md:text-[1.9rem]">
+                      {batchCopy.dropzoneIdle}
+                    </h2>
+                    <p className="mt-4 max-w-[760px] text-[0.95rem] leading-8 text-[var(--muted)]">
+                      {batchCopy.dropzoneDescription}
+                    </p>
+                    <span className="mt-6 inline-flex items-center gap-2 rounded-full border border-[var(--border)] bg-[var(--surface-soft)] px-4 py-2 text-[0.78rem] text-[var(--muted)]">
+                      <MusicIcon className="h-4 w-4" />
+                      {batchCopy.dropzoneSupport}
+                    </span>
                   </div>
-
-                  <h2 className="mt-6 text-[1.55rem] font-semibold tracking-[-0.03em] text-[var(--foreground)] md:text-[1.9rem]">
-                    {batchCopy.dropzoneIdle}
-                  </h2>
-                  <p className="mt-4 max-w-[760px] text-[0.95rem] leading-8 text-[var(--muted)]">
-                    {batchCopy.dropzoneDescription}
-                  </p>
-                  <span className="mt-6 inline-flex items-center gap-2 rounded-full border border-[var(--border)] bg-[var(--surface-soft)] px-4 py-2 text-[0.78rem] text-[var(--muted)]">
-                    <MusicIcon className="h-4 w-4" />
-                    {batchCopy.dropzoneSupport}
-                  </span>
-                </div>
-              </button>
-            </SectionCard>
+                </button>
+              </SectionCard>
+            ) : null}
 
             {items.length > 0 ? (
               <SectionCard>
@@ -859,6 +870,20 @@ export function BatchEditor({ headerPages, footerPages }: BatchEditorProps) {
                             </button>
                           </div>
                         </div>
+
+                        {item.isReading ? (
+                          <div className="mt-4 rounded-[22px] border border-[var(--border)] bg-[var(--surface-soft)] p-4">
+                            <div className="flex flex-wrap items-center justify-between gap-3">
+                              <p className="text-sm font-medium text-[var(--foreground)]">
+                                {copy.progress.processingMetadata}
+                              </p>
+                              <span className="text-[0.78rem] uppercase tracking-[0.2em] text-[var(--muted)]">
+                                MP3
+                              </span>
+                            </div>
+                            <LoadingBar />
+                          </div>
+                        ) : null}
 
                         {item.isExpanded ? (
                           <div className="mt-6 space-y-6">
