@@ -1087,9 +1087,24 @@ export function BatchEditor({ headerPages, footerPages, children }: BatchEditorP
                             </div>
 
                             <div className="flex flex-col gap-3 rounded-[24px] border border-[var(--border)] bg-[var(--surface-soft)] p-5 sm:flex-row sm:items-center sm:justify-between">
-                              <p className="text-sm leading-6 text-[var(--muted)]">
-                                {item.isReading ? copy.progress.processingMetadata : batchCopy.prototypeStatus}
-                              </p>
+                              <div className="min-w-0 flex-1">
+                                {item.isSaving ? (
+                                  <div>
+                                    <div className="flex flex-wrap items-center justify-between gap-3">
+                                      <p className="text-xs uppercase tracking-[0.2em] text-[var(--muted)]">
+                                        {copy.progress.savePanelTitle}
+                                      </p>
+                                      <span className="text-sm font-medium text-[var(--foreground)]">
+                                        ...
+                                      </span>
+                                    </div>
+                                    <p className="mt-2 text-sm font-medium leading-6 text-[var(--foreground)]">
+                                      {copy.progress.preparingDownload}
+                                    </p>
+                                    <LoadingBar />
+                                  </div>
+                                ) : null}
+                              </div>
                               <button
                                 type="button"
                                 onClick={() => {
