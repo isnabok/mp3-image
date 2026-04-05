@@ -23,6 +23,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "weekly",
       priority: 1,
     },
+    {
+      url: buildAbsoluteUrl("/batch"),
+      lastModified: now,
+      changeFrequency: "weekly",
+      priority: 0.8,
+    },
     ...contentEntries,
   ];
 }

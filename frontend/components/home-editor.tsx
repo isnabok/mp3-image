@@ -653,6 +653,8 @@ export default function HomeEditor({ headerPages, footerPages, children }: HomeE
     });
 
     try {
+      const savedCoverPreviewUrl = localCoverPreviewUrl;
+      const hadNewCover = Boolean(coverFile);
       const payload = new FormData();
       payload.append("mp3_file", mp3File);
       payload.append("output_filename", form.outputFilename);
@@ -715,7 +717,7 @@ export default function HomeEditor({ headerPages, footerPages, children }: HomeE
 
       trackEvent("mp3_downloaded", {
         file_size_bytes: blob.size,
-        had_new_cover: Boolean(coverFile),
+        had_new_cover: hadNewCover,
       });
       setStatus(copy.status.saved);
       if (coverFile) {
@@ -726,6 +728,7 @@ export default function HomeEditor({ headerPages, footerPages, children }: HomeE
                 ...current,
                 has_cover: true,
                 cover_mime_type: coverFile.type || current.cover_mime_type,
+                cover_data_url: savedCoverPreviewUrl ?? current.cover_data_url,
               }
             : current,
         );
@@ -745,7 +748,9 @@ export default function HomeEditor({ headerPages, footerPages, children }: HomeE
       }
       setCoverFile(null);
       setRemoveCoverRequested(false);
-      resetCoverPreview();
+      if (!hadNewCover) {
+        resetCoverPreview();
+      }
       setSaveProgress({
         phase: "completed",
         percent: 100,

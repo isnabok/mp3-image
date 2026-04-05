@@ -32,6 +32,15 @@ type MP3MetadataResponse = {
   warnings: string[];
 };
 
+type ProgressPhase = "idle" | "uploading" | "processing" | "downloading" | "completed" | "error";
+type OperationProgress = {
+  phase: ProgressPhase;
+  percent: number | null;
+  loadedBytes: number;
+  totalBytes: number | null;
+  resultBytes: number | null;
+};
+
 type BatchItem = {
   id: string;
   file: File;
@@ -45,6 +54,7 @@ type BatchItem = {
   status: string;
   isReading: boolean;
   isSaving: boolean;
+  readProgress: OperationProgress;
   isExpanded: boolean;
 };
 
@@ -66,6 +76,13 @@ const FIELD_KEYS = [
 ] as const;
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "/api/mp3";
+const EMPTY_PROGRESS: OperationProgress = {
+  phase: "idle",
+  percent: null,
+  loadedBytes: 0,
+  totalBytes: null,
+  resultBytes: null,
+};
 
 const batchCopy =
   copy.lang === "ru"
@@ -182,6 +199,72 @@ function getErrorMessage(error: unknown): string {
   return copy.errors.unknown;
 }
 
+async function extractErrorDetail(xhr: XMLHttpRequest, fallback: string): Promise<string> {
+  try {
+    const bodyText =
+      xhr.response instanceof Blob
+        ? await xhr.response.text()
+        : typeof xhr.responseText === "string"
+          ? xhr.responseText
+          : "";
+
+    if (!bodyText) {
+      return fallback;
+    }
+
+    const parsed = JSON.parse(bodyText) as { detail?: string };
+    return parsed.detail ?? fallback;
+  } catch {
+    return fallback;
+  }
+}
+
+function sendFormDataRequest(
+  url: string,
+  formData: FormData,
+  options: {
+    responseType?: XMLHttpRequestResponseType;
+    onUploadProgress?: (loaded: number, total: number | null) => void;
+    onUploadComplete?: () => void;
+    onDownloadProgress?: (loaded: number, total: number | null) => void;
+  } = {},
+): Promise<XMLHttpRequest> {
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open("POST", url);
+    xhr.responseType = options.responseType ?? "text";
+
+    xhr.upload.onprogress = (event) => {
+      options.onUploadProgress?.(event.loaded, event.lengthComputable ? event.total : null);
+    };
+
+    xhr.upload.onload = () => {
+      options.onUploadComplete?.();
+    };
+
+    xhr.onprogress = (event) => {
+      options.onDownloadProgress?.(event.loaded, event.lengthComputable ? event.total : null);
+    };
+
+    xhr.onerror = () => {
+      reject(new Error("Network error"));
+    };
+
+    xhr.onload = () => {
+      if (xhr.status >= 200 && xhr.status < 300) {
+        resolve(xhr);
+        return;
+      }
+
+      void (async () => {
+        reject(new Error(await extractErrorDetail(xhr, `Request failed with status ${xhr.status}`)));
+      })();
+    };
+
+    xhr.send(formData);
+  });
+}
+
 function getExtensionFromMimeType(mimeType: string | null | undefined): string {
   switch (mimeType) {
     case "image/jpeg":
@@ -226,6 +309,12 @@ function createBatchItem(file: File, isExpanded: boolean): BatchItem {
     status: formatMessage(copy.status.reading, { filename: file.name }),
     isReading: true,
     isSaving: false,
+    readProgress: {
+      ...EMPTY_PROGRESS,
+      phase: "uploading",
+      percent: 0,
+      totalBytes: file.size,
+    },
     isExpanded,
   };
 }
@@ -249,14 +338,35 @@ function SectionCard({
   );
 }
 
-function LoadingBar() {
+function ProgressBar({ progress }: { progress: OperationProgress }) {
+  const width = progress.percent === null ? "45%" : `${progress.percent}%`;
+
   return (
     <div className="mt-3 h-2.5 overflow-hidden rounded-full bg-[var(--surface-soft)]">
-      <div className="relative h-full w-[42%] animate-pulse rounded-full bg-[linear-gradient(90deg,var(--accent),var(--accent-strong))]">
+      <div
+        className={joinClasses(
+          "relative h-full rounded-full bg-[linear-gradient(90deg,var(--accent),var(--accent-strong))] transition-all duration-300",
+          progress.percent === null && "animate-pulse",
+        )}
+        style={{ width }}
+      >
         <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.24),transparent)] opacity-70" />
       </div>
     </div>
   );
+}
+
+function getReadProgressLabel(progress: OperationProgress): string {
+  switch (progress.phase) {
+    case "uploading":
+      return copy.progress.uploading;
+    case "processing":
+      return copy.progress.processingMetadata;
+    case "completed":
+      return copy.progress.metadataReady;
+    default:
+      return copy.progress.uploadPanelTitle;
+  }
 }
 
 function IconWrap({ children }: { children: ReactNode }) {
@@ -370,17 +480,32 @@ export function BatchEditor({ headerPages, footerPages, children }: BatchEditorP
     payload.append("mp3_file", file);
 
     try {
-      const response = await fetch(`${API_BASE_URL}/read`, {
-        method: "POST",
-        body: payload,
+      const xhr = await sendFormDataRequest(`${API_BASE_URL}/read`, payload, {
+        onUploadProgress: (loaded, total) => {
+          updateItem(itemId, (item) => ({
+            ...item,
+            readProgress: {
+              phase: "uploading",
+              loadedBytes: loaded,
+              totalBytes: total,
+              percent: total ? Math.min(100, (loaded / total) * 100) : null,
+              resultBytes: null,
+            },
+          }));
+        },
+        onUploadComplete: () => {
+          updateItem(itemId, (item) => ({
+            ...item,
+            readProgress: {
+              ...item.readProgress,
+              phase: "processing",
+              percent: null,
+            },
+          }));
+        },
       });
 
-      const data = (await response.json()) as MP3MetadataResponse | { detail?: string };
-      if (!response.ok) {
-        throw new Error((data as { detail?: string }).detail ?? copy.status.loadFailed);
-      }
-
-      const parsed = data as MP3MetadataResponse;
+      const parsed = JSON.parse(xhr.responseText) as MP3MetadataResponse;
       updateItem(itemId, (item) => ({
         ...item,
         metadata: parsed.metadata,
@@ -388,6 +513,13 @@ export function BatchEditor({ headerPages, footerPages, children }: BatchEditorP
         error: "",
         status: copy.status.loaded,
         isReading: false,
+        readProgress: {
+          phase: "completed",
+          percent: 100,
+          loadedBytes: file.size,
+          totalBytes: file.size,
+          resultBytes: null,
+        },
         form: {
           outputFilename: parsed.metadata.filename ?? createInitialForm(file).outputFilename,
           title: parsed.metadata.title ?? "",
@@ -407,6 +539,10 @@ export function BatchEditor({ headerPages, footerPages, children }: BatchEditorP
         error: getErrorMessage(error),
         status: copy.status.loadFailed,
         isReading: false,
+        readProgress: {
+          ...EMPTY_PROGRESS,
+          phase: "error",
+        },
       }));
     }
   };
@@ -717,7 +853,7 @@ export function BatchEditor({ headerPages, footerPages, children }: BatchEditorP
                   onDragLeave={handleDragLeave}
                   onDrop={handleDrop}
                   className={joinClasses(
-                    "upload-dropzone relative w-full overflow-hidden rounded-[30px] border border-[var(--border)] bg-[radial-gradient(circle_at_top_left,color-mix(in_oklab,var(--accent-glow)_45%,transparent),transparent_34%),var(--surface)] px-6 py-10 text-left transition",
+                    "upload-dropzone relative w-full cursor-pointer overflow-hidden rounded-[30px] border border-[var(--border)] bg-[radial-gradient(circle_at_top_left,color-mix(in_oklab,var(--accent-glow)_45%,transparent),transparent_34%),var(--surface)] px-6 py-10 text-left transition",
                     isDragging && "is-dragging",
                   )}
                   data-dragging={isDragging}
@@ -859,14 +995,29 @@ export function BatchEditor({ headerPages, footerPages, children }: BatchEditorP
                         {item.isReading ? (
                           <div className="mt-4 rounded-[22px] border border-[var(--border)] bg-[var(--surface-soft)] p-4">
                             <div className="flex flex-wrap items-center justify-between gap-3">
-                              <p className="text-sm font-medium text-[var(--foreground)]">
-                                {copy.progress.processingMetadata}
+                              <p className="text-xs uppercase tracking-[0.2em] text-[var(--muted)]">
+                                {copy.progress.uploadPanelTitle}
                               </p>
-                              <span className="text-[0.78rem] uppercase tracking-[0.2em] text-[var(--muted)]">
-                                MP3
+                              <span className="text-sm font-medium text-[var(--foreground)]">
+                                {item.readProgress.percent === null
+                                  ? copy.progress.unknownPercent
+                                  : formatMessage(copy.progress.percent, {
+                                      value: Math.round(item.readProgress.percent),
+                                    })}
                               </span>
                             </div>
-                            <LoadingBar />
+                            <p className="mt-2 text-sm font-medium text-[var(--foreground)]">
+                              {getReadProgressLabel(item.readProgress)}
+                            </p>
+                            <ProgressBar progress={item.readProgress} />
+                            <div className="mt-3 flex flex-wrap gap-x-5 gap-y-2 text-sm text-[var(--muted)]">
+                              <span>
+                                {copy.progress.selectedFile}: {item.file.name}
+                              </span>
+                              <span>
+                                {copy.progress.fileSize}: {formatBytes(item.file.size)}
+                              </span>
+                            </div>
                           </div>
                         ) : null}
 
@@ -1101,7 +1252,15 @@ export function BatchEditor({ headerPages, footerPages, children }: BatchEditorP
                                     <p className="mt-2 text-sm font-medium leading-6 text-[var(--foreground)]">
                                       {copy.progress.preparingDownload}
                                     </p>
-                                    <LoadingBar />
+                                    <ProgressBar
+                                      progress={{
+                                        phase: "processing",
+                                        percent: null,
+                                        loadedBytes: 0,
+                                        totalBytes: null,
+                                        resultBytes: null,
+                                      }}
+                                    />
                                   </div>
                                 ) : null}
                               </div>
