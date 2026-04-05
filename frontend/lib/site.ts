@@ -1,6 +1,6 @@
 import { siteMessages } from "@/lib/i18n";
 
-const fallbackSiteUrl = "https://tagsmp3.com/";
+const fallbackSiteUrl = "https://id3tags.com/";
 
 function normalizeSiteUrl(value?: string | null): string {
   const normalized = value?.trim();

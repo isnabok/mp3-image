@@ -33,7 +33,7 @@ export function SocialShare({ title, description }: SocialShareProps) {
             width: "88px",
             height: "88px",
             borderRadius: "28px",
-            background: "linear-gradient(180deg, #2dd4bf, #14b8a6)",
+            background: "linear-gradient(180deg, #6d86ff, #4a6cf7)",
             color: "#042f2e",
             display: "flex",
             alignItems: "center",

@@ -1,8 +1,8 @@
-# MP3 Tag Editor (tagsmp3.com)
+# MP3 Tag Editor (id3tags.com)
 
 > Free online MP3 tag editor to edit MP3 tags, update ID3 metadata, and add cover image to MP3 files directly in your browser.
 
-Site: https://tagsmp3.com  
+Site: https://id3tags.com  
 Primary language: English  
 Category: Audio tools / MP3 editor / Metadata editor  
 

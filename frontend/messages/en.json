@@ -1,20 +1,20 @@
 {
   "lang": "en",
   "meta": {
-    "title": "Edit Tag MP3 Online & Add Cover Image Free",
-    "description": "Edit MP3 tags online, add cover image to MP3, update artist, title & album metadata. Free, fast and no upload limits on tagsmp3.com"
+    "title": "ID3 Tags Editor Online – Edit MP3, FLAC, OGG & M4A Metadata",
+    "description": "Edit ID3 tags and audio metadata online. Update artist, title, album and add cover art for MP3, FLAC, OGG & M4A. Free, fast and easy to use."
   },
   "header": {
-    "eyebrow": "MP3 Tags & Cover Editor",
-    "title": "MP3 Tags Editor",
-    "subtitle": "Edit mp3 tags & add image",
+    "eyebrow": "Audio Tags & Cover Editor",
+    "title": "ID3 Tags Editor",
+    "subtitle": "Edit audio metadata & add cover art (MP3, FLAC, OGG, M4A)",
     "badge": "Free Mode"
   },
   "actions": {
-    "selectMp3": "Choose MP3",
-    "changeMp3": "Choose another MP3",
+    "selectMp3": "Choose audio file",
+    "changeMp3": "Choose another file",
     "removeMp3": "Remove file",
-    "selectCover": "Choose new cover",
+    "selectCover": "Choose cover image",
     "downloadCover": "Download cover",
     "removeCover": "Remove cover",
     "save": "Save and download",
@@ -22,101 +22,101 @@
     "toggleTheme": "Toggle theme"
   },
   "hero": {
-    "title": "Edit MP3 Tags Online & Add Cover Image",
-    "description": "Upload your MP3, edit ID3 tags, and add image to MP3 in seconds. Fast, free and easy to use — no software needed. Change MP3 tags, update artist, title and album, and add cover image to MP3. Works instantly in your browser.",
-    "dropzoneIdle": "Upload MP3 to Edit Tags & Add Cover",
-    "dropzoneReading": "Processing your MP3 and loading tags...",
-    "dropzoneDescription": "Drag & drop your MP3 or click to upload. Edit MP3 tags and add image to MP3 instantly — fast and free.",
-    "dropzoneSupport": "Supports MP3 • Add cover (PNG, JPG, WEBP)",
+    "title": "Edit ID3 Tags & Audio Metadata Online",
+    "description": "Upload your audio file and edit ID3 tags for MP3 or metadata for FLAC, OGG, and M4A in seconds. Update artist, title, album, and add cover art easily. Fast, free, and works directly in your browser — no software required.",
+    "dropzoneIdle": "Upload audio file to edit tags & add cover",
+    "dropzoneReading": "Processing your audio file and loading metadata...",
+    "dropzoneDescription": "Drag & drop your audio file or click to upload. Edit tags and add cover art instantly — fast and easy.",
+    "dropzoneSupport": "Supports MP3 (ID3), FLAC, OGG, M4A • Cover: PNG, JPG, WEBP",
     "steps": [
-      "Upload your MP3 file.",
-      "Edit MP3 tags and metadata.",
-      "Add cover image to MP3.",
+      "Upload your audio file (MP3, FLAC, OGG, or M4A).",
+      "Edit ID3 tags or audio metadata.",
+      "Add or change cover artwork.",
       "Download your updated file."
     ]
   },
   "features": {
     "items": [
       {
-        "title": "Edit MP3 Tags Online",
-        "description": "Change MP3 tags online: title, artist, album, track, genre, year and filename. Easy-to-use ID3 tag editor."
+        "title": "Edit ID3 Tags & Audio Metadata",
+        "description": "Edit ID3 tags for MP3 and update metadata for FLAC, OGG, and M4A files. Change title, artist, album, track, genre, year, and filename in a simple and intuitive editor."
       },
       {
-        "title": "Image to MP3 (Cover Art)",
-        "description": "Add cover image to MP3 or update artwork in seconds. Works with PNG, JPG and WEBP formats."
+        "title": "Add & Update Cover Art",
+        "description": "Add or replace cover artwork for your audio files in seconds. Supports MP3, FLAC, OGG, and M4A with PNG, JPG, and WEBP images."
       },
       {
-        "title": "Fast & Free MP3 Editor",
-        "description": "Upload MP3, edit tags and download instantly. No install, no limits, 100% free MP3 tag editor online."
+        "title": "Fast & Free Audio Tag Editor",
+        "description": "Upload your audio file, edit tags, and download instantly. No installation, no limits, and completely free online metadata editor."
       }
     ]
   },
   "file": {
-    "readyTitle": "MP3 Ready",
-    "readyDescription": "MP3 tags loaded. You can now edit tags and add cover art.",
+    "readyTitle": "Audio File Ready",
+    "readyDescription": "Audio metadata loaded. You can now edit tags and add cover art.",
     "name": "File name",
     "size": "File size"
   },
   "status": {
-    "panelTitle": "MP3 Editor Status",
-    "idle": "Drop your MP3 here or choose a file to edit MP3 tags and add cover.",
-    "reading": "Loading MP3 and reading tags from {filename}...",
-    "loaded": "MP3 loaded. You can now edit tags and add cover image.",
-    "loadFailed": "Could not load MP3 tags.",
+    "panelTitle": "Audio Tag Editor Status",
+    "idle": "Drop your audio file here or choose a file to edit tags and add cover.",
+    "reading": "Loading audio file and reading metadata from {filename}...",
+    "loaded": "Audio file loaded. You can now edit tags and add cover art.",
+    "loadFailed": "Could not load audio metadata.",
     "coverSelected": "Cover image selected: {filename}",
     "coverRemoved": "Cover image removed. Save to apply.",
-    "saving": "Saving MP3 with updated tags and cover...",
-    "saved": "Done. Your updated MP3 is downloading.",
-    "saveFailed": "Could not save the updated MP3.",
-    "selectFileFirst": "Upload an MP3 file first.",
-    "currentFile": "Current MP3: {filename}"
+    "saving": "Saving audio file with updated tags and cover...",
+    "saved": "Done. Your updated file is downloading.",
+    "saveFailed": "Could not save the updated file.",
+    "selectFileFirst": "Upload an audio file first.",
+    "currentFile": "Current file: {filename}"
   },
   "warnings": {
     "panelTitle": "Warnings",
     "empty": "No issues detected.",
-    "coverPending": "Cover image selected but not added to MP3 yet. Save to apply."
+    "coverPending": "Cover image selected but not yet applied to the audio file. Save to apply."
   },
   "progress": {
-    "uploadPanelTitle": "Upload MP3",
-    "savePanelTitle": "Processing MP3",
-    "uploading": "Uploading MP3...",
-    "processingMetadata": "Reading MP3 tags...",
-    "metadataReady": "Tags loaded.",
+    "uploadPanelTitle": "Upload Audio File",
+    "savePanelTitle": "Processing Audio File",
+    "uploading": "Uploading audio file...",
+    "processingMetadata": "Reading audio metadata...",
+    "metadataReady": "Metadata loaded.",
     "uploadingChanges": "Applying tag changes...",
-    "preparingDownload": "Preparing your updated MP3...",
-    "downloading": "Downloading MP3...",
-    "downloadReady": "Done! Your MP3 is ready.",
+    "preparingDownload": "Preparing your updated file...",
+    "downloading": "Downloading file...",
+    "downloadReady": "Done! Your file is ready.",
     "fileSize": "File size",
     "downloadSize": "Download size",
-    "selectedFile": "Selected MP3",
+    "selectedFile": "Selected file",
     "percent": "{value}%",
     "unknownPercent": "..."
   },
   "errors": {
     "unknown": "An unknown error occurred.",
-    "readFailed": "Could not read the MP3 file.",
-    "saveFailed": "Could not save the updated MP3."
+    "readFailed": "Could not read the audio file.",
+    "saveFailed": "Could not save the updated file."
   },
   "cover": {
-    "panelTitle": "MP3 Cover Art",
-    "empty": "No cover image found in this MP3.",
-    "previewAlt": "MP3 cover art preview",
-    "instructions": "Supports PNG, JPG, WEBP. Add cover image to MP3 — square images work best and are auto-optimized.",
+    "panelTitle": "Cover Art",
+    "empty": "No cover image found in this file.",
+    "previewAlt": "Cover art preview",
+    "instructions": "Supports PNG, JPG, WEBP. Add or update cover art for your audio file — square images work best and are auto-optimized.",
     "mime": "Format",
     "newImage": "Selected image",
     "none": "None",
     "notSelected": "Not selected"
   },
   "audio": {
-    "panelTitle": "MP3 Player",
+    "panelTitle": "Audio Player",
     "play": "Play audio",
     "pause": "Pause audio",
     "loading": "Loading audio...",
     "waveformLabel": "Waveform preview"
   },
   "metadata": {
-    "panelTitle": "MP3 Tags",
-    "title": "Edit MP3 Tags",
+    "panelTitle": "Audio Tags",
+    "title": "Edit ID3 Tags & Audio Metadata",
     "commentLabel": "Comment",
     "commentPlaceholder": "Add a comment (COMM tag)",
     "fields": {
@@ -151,10 +151,10 @@
     }
   },
   "footer": {
-    "text": "MP3 Tag Editor | Simple MP3 editing, made with ❤️"
+    "text": "ID3 Tag Editor | Simple audio metadata editing, made with ❤️"
   },
   "content": {
-    "backToEditor": "Back to MP3 Editor",
+    "backToEditor": "Back to Audio Editor",
     "home": "Home",
     "breadcrumbs": "Navigation",
     "menuTitle": "Pages",
