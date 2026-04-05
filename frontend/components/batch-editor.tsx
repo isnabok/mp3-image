@@ -55,6 +55,7 @@ type BatchItem = {
   isReading: boolean;
   isSaving: boolean;
   readProgress: OperationProgress;
+  saveProgress: OperationProgress;
   isExpanded: boolean;
 };
 
@@ -315,6 +316,7 @@ function createBatchItem(file: File, isExpanded: boolean): BatchItem {
       percent: 0,
       totalBytes: file.size,
     },
+    saveProgress: EMPTY_PROGRESS,
     isExpanded,
   };
 }
@@ -366,6 +368,21 @@ function getReadProgressLabel(progress: OperationProgress): string {
       return copy.progress.metadataReady;
     default:
       return copy.progress.uploadPanelTitle;
+  }
+}
+
+function getSaveProgressLabel(progress: OperationProgress): string {
+  switch (progress.phase) {
+    case "uploading":
+      return copy.progress.uploadingChanges;
+    case "processing":
+      return copy.progress.preparingDownload;
+    case "downloading":
+      return copy.progress.downloading;
+    case "completed":
+      return copy.progress.downloadReady;
+    default:
+      return copy.progress.savePanelTitle;
   }
 }
 
@@ -682,6 +699,12 @@ export function BatchEditor({ headerPages, footerPages, children }: BatchEditorP
       isSaving: true,
       error: "",
       status: copy.status.saving,
+      saveProgress: {
+        ...EMPTY_PROGRESS,
+        phase: "uploading",
+        percent: 0,
+        totalBytes: current.file.size,
+      },
     }));
 
     try {
@@ -701,19 +724,47 @@ export function BatchEditor({ headerPages, footerPages, children }: BatchEditorP
         payload.append("cover_image", item.coverFile);
       }
 
-      const response = await fetch(`${API_BASE_URL}/update`, {
-        method: "POST",
-        body: payload,
+      const xhr = await sendFormDataRequest(`${API_BASE_URL}/update`, payload, {
+        responseType: "blob",
+        onUploadProgress: (loaded, total) => {
+          updateItem(item.id, (current) => ({
+            ...current,
+            saveProgress: {
+              phase: "uploading",
+              loadedBytes: loaded,
+              totalBytes: total,
+              percent: total ? Math.min(100, (loaded / total) * 100) : null,
+              resultBytes: null,
+            },
+          }));
+        },
+        onUploadComplete: () => {
+          updateItem(item.id, (current) => ({
+            ...current,
+            saveProgress: {
+              ...current.saveProgress,
+              phase: "processing",
+              percent: null,
+            },
+          }));
+        },
+        onDownloadProgress: (loaded, total) => {
+          updateItem(item.id, (current) => ({
+            ...current,
+            saveProgress: {
+              phase: "downloading",
+              loadedBytes: loaded,
+              totalBytes: total,
+              percent: total ? Math.min(100, (loaded / total) * 100) : null,
+              resultBytes: null,
+            },
+          }));
+        },
       });
 
-      if (!response.ok) {
-        const data = (await response.json().catch(() => ({}))) as { detail?: string };
-        throw new Error(data.detail ?? copy.status.saveFailed);
-      }
-
-      const blob = await response.blob();
+      const blob = xhr.response as Blob;
       const downloadFilename =
-        getFilenameFromDisposition(response.headers.get("content-disposition")) ??
+        getFilenameFromDisposition(xhr.getResponseHeader("content-disposition")) ??
         item.form.outputFilename.trim() ??
         item.file.name;
 
@@ -769,6 +820,13 @@ export function BatchEditor({ headerPages, footerPages, children }: BatchEditorP
         removeCoverRequested: false,
         status: copy.status.saved,
         isSaving: false,
+        saveProgress: {
+          phase: "completed",
+          percent: 100,
+          loadedBytes: blob.size,
+          totalBytes: blob.size,
+          resultBytes: blob.size,
+        },
       }));
     } catch (error) {
       updateItem(item.id, (current) => ({
@@ -776,6 +834,10 @@ export function BatchEditor({ headerPages, footerPages, children }: BatchEditorP
         error: getErrorMessage(error),
         status: copy.status.saveFailed,
         isSaving: false,
+        saveProgress: {
+          ...EMPTY_PROGRESS,
+          phase: "error",
+        },
       }));
     }
   };
@@ -816,7 +878,7 @@ export function BatchEditor({ headerPages, footerPages, children }: BatchEditorP
               <p className="text-xs uppercase tracking-[0.28em] text-[var(--muted)]">
                 {batchCopy.eyebrow}
               </p>
-              <h1 className="mx-auto max-w-[900px] text-[2rem] font-semibold tracking-[-0.04em] text-[var(--foreground)] md:text-[3.15rem]">
+              <h1 className="mx-auto max-w-[900px] text-[1.7rem] font-bold leading-[1.08] tracking-[-0.04em] text-[var(--foreground)] md:text-[2rem]">
                 {batchCopy.title}
               </h1>
               <p className="mx-auto max-w-[820px] text-[0.98rem] leading-8 text-[var(--muted)] md:text-[1.05rem]">
@@ -1239,28 +1301,34 @@ export function BatchEditor({ headerPages, footerPages, children }: BatchEditorP
 
                             <div className="flex flex-col gap-3 rounded-[24px] border border-[var(--border)] bg-[var(--surface-soft)] p-5 sm:flex-row sm:items-center sm:justify-between">
                               <div className="min-w-0 flex-1">
-                                {item.isSaving ? (
+                                {item.saveProgress.phase !== "idle" ? (
                                   <div>
                                     <div className="flex flex-wrap items-center justify-between gap-3">
                                       <p className="text-xs uppercase tracking-[0.2em] text-[var(--muted)]">
                                         {copy.progress.savePanelTitle}
                                       </p>
                                       <span className="text-sm font-medium text-[var(--foreground)]">
-                                        ...
+                                        {item.saveProgress.percent === null
+                                          ? copy.progress.unknownPercent
+                                          : formatMessage(copy.progress.percent, {
+                                              value: Math.round(item.saveProgress.percent),
+                                            })}
                                       </span>
                                     </div>
                                     <p className="mt-2 text-sm font-medium leading-6 text-[var(--foreground)]">
-                                      {copy.progress.preparingDownload}
+                                      {getSaveProgressLabel(item.saveProgress)}
                                     </p>
-                                    <ProgressBar
-                                      progress={{
-                                        phase: "processing",
-                                        percent: null,
-                                        loadedBytes: 0,
-                                        totalBytes: null,
-                                        resultBytes: null,
-                                      }}
-                                    />
+                                    <ProgressBar progress={item.saveProgress} />
+                                    <div className="mt-3 flex flex-wrap gap-x-5 gap-y-2 text-sm text-[var(--muted)]">
+                                      <span>
+                                        {copy.progress.fileSize}: {formatBytes(item.file.size)}
+                                      </span>
+                                      {item.saveProgress.resultBytes ? (
+                                        <span>
+                                          {copy.progress.downloadSize}: {formatBytes(item.saveProgress.resultBytes)}
+                                        </span>
+                                      ) : null}
+                                    </div>
                                   </div>
                                 ) : null}
                               </div>
@@ -1270,7 +1338,10 @@ export function BatchEditor({ headerPages, footerPages, children }: BatchEditorP
                                   void handleSave(item);
                                 }}
                                 disabled={item.isReading || item.isSaving || !item.metadata}
-                                className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[linear-gradient(135deg,var(--accent),var(--accent-strong))] px-6 py-3.5 text-sm font-semibold text-[var(--accent-contrast)] shadow-[0_16px_32px_var(--accent-glow)] transition hover:translate-y-[-1px] hover:shadow-[0_20px_36px_var(--accent-glow)] disabled:cursor-not-allowed disabled:opacity-60"
+                                className={joinClasses(
+                                  "inline-flex items-center justify-center gap-2 rounded-2xl bg-[linear-gradient(135deg,var(--accent),var(--accent-strong))] px-6 py-3.5 text-sm font-semibold text-[var(--accent-contrast)] shadow-[0_16px_32px_var(--accent-glow)] transition hover:translate-y-[-1px] hover:shadow-[0_20px_36px_var(--accent-glow)] disabled:cursor-not-allowed disabled:opacity-60",
+                                  item.saveProgress.phase !== "idle" && "sm:self-end",
+                                )}
                               >
                                 <DownloadIcon />
                                 {item.isSaving ? copy.actions.saving : copy.actions.save}
