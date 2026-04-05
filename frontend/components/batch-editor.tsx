@@ -120,10 +120,10 @@ const batchCopy =
         mockSaved: "Mock download started. Пакетный backend пока не подключен."
       }
     : {
-        eyebrow: "Batch editor",
-        title: "Batch-edit multiple MP3 files",
+        eyebrow: "Batch MP3 Album Editor",
+        title: "Edit MP3 Album Tags & Add Cover Art to Multiple Files",
         description:
-          "This is a frontend-only prototype of the multi-upload page. Use it to validate the queue, accordion cards, local cover flow, and per-file download action before batch backend processing is connected.",
+          "Upload multiple MP3 files and edit album tags, update metadata, and add album art to MP3 online in one batch. Fast, simple and free.",
         backToSingle: "Back to single-file editor",
         dropzoneIdle: "Drop multiple MP3 files here",
         dropzoneDescription:
